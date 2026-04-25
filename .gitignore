@@ -1,0 +1,26 @@
+# Unity generated folders
+Library/
+Temp/
+Obj/
+Logs/
+UserSettings/
+.vs/
+
+# Build folders
+Build/
+Builds/
+
+# macOS
+.DS_Store
+
+# IDE / Visual Studio
+*.csproj
+*.sln
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
