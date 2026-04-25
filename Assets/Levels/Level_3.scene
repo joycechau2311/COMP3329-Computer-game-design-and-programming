@@ -137,12 +137,20 @@ PrefabInstance:
       value: Chaser
       objectReference: {fileID: 0}
     - target: {fileID: 4357711334023088321, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 8.7388
+      objectReference: {fileID: 0}
+    - target: {fileID: 4357711334023088321, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 8.390201
+      objectReference: {fileID: 0}
+    - target: {fileID: 4357711334023088321, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19.456627
+      value: 19.7957
       objectReference: {fileID: 0}
     - target: {fileID: 4357711334023088321, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.2349885
+      value: -2.9411
       objectReference: {fileID: 0}
     - target: {fileID: 4357711334023088321, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -175,6 +183,22 @@ PrefabInstance:
     - target: {fileID: 4357711334023088321, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5840718080371054854, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
+      propertyPath: m_Size.x
+      value: 0.30067962
+      objectReference: {fileID: 0}
+    - target: {fileID: 5840718080371054854, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
+      propertyPath: m_Size.y
+      value: 0.4001578
+      objectReference: {fileID: 0}
+    - target: {fileID: 5840718080371054854, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.047809523
+      objectReference: {fileID: 0}
+    - target: {fileID: 5840718080371054854, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.013358504
       objectReference: {fileID: 0}
     - target: {fileID: 7538249874728400302, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
       propertyPath: player
@@ -381,7 +405,7 @@ SpriteRenderer:
   m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &416886599
@@ -590,12 +614,12 @@ SpriteRenderer:
   m_SortingLayerID: -2013523521
   m_SortingLayer: -1
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: 4097efc27785248f8b320d4faf190d08, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 67661bbf8e1a84e4394ff942be026df0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 26.22, y: 4.6858006}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -639,8 +663,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 10.24, y: 4.79}
-    newSize: {x: 1, y: 1}
+    oldSize: {x: 26.22, y: 4.6858006}
+    newSize: {x: 26.22, y: 4.6858006}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -1382,6 +1406,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5300383771079142857, guid: 311263ade2b8640c1882c605b032f725, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: b91bf6a1d84e041e49c5b9086a2c052a, type: 2}
     - target: {fileID: 7806452417933260886, guid: 311263ade2b8640c1882c605b032f725, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1559,7 +1587,7 @@ SpriteRenderer:
   m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1652915805
