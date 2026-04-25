@@ -1,294 +1,342 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class InfiniteScroll : MonoBehaviour
 {
     [Header("Core Settings")]
     public Transform player;
-    [Tooltip("Exact width of your BG tile (match sprite width ÷ PPU)")]
-    public float tileWidth = 19.2f;
     public float spawnAheadDistance = 20f;
 
-    [Header("Scene References")]
-    public SpriteRenderer bgTemplate;      // Drag BG SpriteRenderer from Hierarchy
-    public GameObject groundTemplate;      // Drag Ground GameObject (with BoxCollider2D) from Hierarchy
-    public SpriteRenderer boxTemplate;     // Drag Box SpriteRenderer from Hierarchy (optional)
+    [Header("Templates (use scene objects as templates)")]
+    public SpriteRenderer bgTemplate;   // in-scene BG tile used as template
+    public GameObject groundTemplate;   // in-scene Ground tile used as template (sprite + collider)
+    public GameObject boxTemplate;      // optional in-scene Box used as template (sprite + collider)
 
-    [Header("Box Obstacles")]
-    public Vector2 boxSpawnRangeX = new Vector2(5f, 9f);
-    [Range(0f, 0.3f)] public float boxSpawnChance = 0.2f;
+    [Header("Boxes")]
+    [Range(0f, 1f)] public float boxSpawnChancePerTile = 0.35f;
+    [Tooltip("If a tile is chosen to spawn boxes, at least this many will be created.")]
+    public int minBoxesPerChosenTile = 1;
+    public Vector2 boxCountRange = new Vector2(0, 2); // inclusive-ish (we'll round)
+    [Tooltip("If enabled, boxes will be placed on top of the ground collider/sprite automatically.")]
+    public bool placeBoxesOnGroundTop = true;
     public float boxYPosition = -1.5f;
+    [Tooltip("Optional tag to apply to spawned boxes (leave empty to keep template tag).")]
+    public string boxTag = "Obstacle";
+    [Tooltip("Avoid spawning a box on top of player/enemies (prevents movers getting embedded and flip-spamming).")]
+    public bool avoidSpawningBoxesOnCharacters = true;
+    public float avoidCharacterRadius = 1.2f;
+    [Tooltip("If enabled, enforce low-friction colliders on spawned boxes to reduce 'sticking'.")]
+    public bool forceLowFrictionBoxes = true;
 
-    [Header("Layer Settings")]
-    public int boxLayer = 8;
+    [Header("Layers")]
+    [Tooltip("Layer assigned to spawned boxes so EnemyMover can rebound via obstacleMask. Prefer setting by name for portability.")]
+    public string boxLayerName = "Obstacle";
+    [Tooltip("Fallback layer index if boxLayerName is not found.")]
+    public int boxLayer = 15;
 
-    private bool flipNextBg = true;
-    private List<GameObject> bgList = new List<GameObject>();
-    private List<GameObject> groundList = new List<GameObject>();
-    private List<GameObject> boxList = new List<GameObject>();
+    private float tileWidth;
+    private float baseX;
+    private float cachedGroundTopY;
+    private float cachedBoxHalfHeight;
+    private float cachedBoxHalfWidth;
+    private PhysicsMaterial2D lowFrictionMaterial;
 
-    private float lastSpawnX;
-    private float firstSpawnX;
-    private float boxWidth;
-
-    // Store original Y positions
-    private float bgY;
-    private float groundY;
-    private float boxZ;
+    private readonly Dictionary<int, GameObject> bgByIndex = new();
+    private readonly Dictionary<int, GameObject> groundByIndex = new();
+    private readonly Dictionary<int, List<GameObject>> boxesByIndex = new();
+    private bool warnedMissingBoxTemplate;
 
     private void Start()
     {
-        // Validate references
         if (player == null || bgTemplate == null || groundTemplate == null)
         {
-            UnityEngine.Debug.LogError("Assign Player, BG Template, Ground Template in Inspector!");
+            Debug.LogError("Assign Player, BG Template, Ground Template in Inspector!");
             enabled = false;
             return;
         }
 
-        // Store original Y positions
-        bgY = bgTemplate.transform.position.y;
-        groundY = groundTemplate.transform.position.y;
-        boxZ = boxTemplate != null ? boxTemplate.transform.position.z : 0;
-
-        // Auto-detect BG width (including scale)
         tileWidth = bgTemplate.bounds.size.x;
-
-        // Get box width
-        if (boxTemplate != null)
+        if (tileWidth <= 0.001f)
         {
-            boxWidth = boxTemplate.bounds.size.x;
+            Debug.LogError("BG Template bounds width is invalid.");
+            enabled = false;
+            return;
         }
 
-        // Initialize spawn position based on player tile index
-        firstSpawnX = Mathf.Floor(player.position.x / tileWidth) * tileWidth;
-        lastSpawnX = firstSpawnX;
+        baseX = bgTemplate.transform.position.x;
 
-        // Pre-spawn tiles around player
-        for (int i = -1; i <= 2; i++)
+        CacheBoxAndGroundHeights();
+
+        // Hide templates (keep them in scene as references/prefabs)
+        bgTemplate.gameObject.SetActive(false);
+        groundTemplate.SetActive(false);
+        if (boxTemplate != null) boxTemplate.SetActive(false);
+        else Debug.LogWarning("Box Template is not assigned; boxes will not be generated.");
+
+        // Spawn initial band of tiles
+        int centerIndex = WorldXToIndex(player.position.x);
+        EnsureTiles(centerIndex);
+    }
+
+    private void CacheBoxAndGroundHeights()
+    {
+        // Ground top (prefer collider; fallback to sprite bounds)
+        cachedGroundTopY = groundTemplate.transform.position.y;
+        var gc = groundTemplate.GetComponent<Collider2D>();
+        if (gc != null)
+            cachedGroundTopY = gc.bounds.max.y;
+        else
         {
-            SpawnTile(firstSpawnX + i * tileWidth);
+            var gsr = groundTemplate.GetComponent<SpriteRenderer>();
+            if (gsr != null) cachedGroundTopY = gsr.bounds.max.y;
+        }
+
+        // Box half height (prefer collider; fallback to sprite bounds)
+        cachedBoxHalfHeight = 0.5f;
+        cachedBoxHalfWidth = 0.5f;
+        if (boxTemplate != null)
+        {
+            var bc = boxTemplate.GetComponent<Collider2D>();
+            if (bc != null)
+            {
+                cachedBoxHalfHeight = bc.bounds.extents.y;
+                cachedBoxHalfWidth = bc.bounds.extents.x;
+            }
+            else
+            {
+                var bsr = boxTemplate.GetComponent<SpriteRenderer>();
+                if (bsr != null)
+                {
+                    cachedBoxHalfHeight = bsr.bounds.extents.y;
+                    cachedBoxHalfWidth = bsr.bounds.extents.x;
+                }
+            }
+        }
+
+        if (forceLowFrictionBoxes && lowFrictionMaterial == null)
+        {
+            lowFrictionMaterial = new PhysicsMaterial2D("InfiniteScroll_LowFriction")
+            {
+                friction = 0f,
+                bounciness = 0f
+            };
         }
     }
 
     private void Update()
     {
-        if (player == null)
+        if (player == null) return;
+
+        if (!warnedMissingBoxTemplate && boxTemplate == null)
         {
-            enabled = false;
-            return;
+            warnedMissingBoxTemplate = true;
+            Debug.LogWarning("InfiniteScroll: Box Template is not assigned, so boxes cannot be generated.");
         }
 
-        // Calculate current tile index
-        float playerTileIndex = Mathf.Floor(player.position.x / tileWidth);
-
-        // Spawn tiles ahead of player
-        float rightSpawnIndex = playerTileIndex + 2;
-        for (float i = Mathf.Ceil(lastSpawnX / tileWidth); i <= rightSpawnIndex; i++)
-        {
-            float spawnX = i * tileWidth;
-            if (!IsTileAlreadySpawned(spawnX))
-            {
-                lastSpawnX = spawnX;
-                SpawnTile(spawnX);
-            }
-        }
-
-        // Spawn tiles behind player (for left movement)
-        float leftSpawnIndex = playerTileIndex - 1;
-        if (lastSpawnX > player.position.x + spawnAheadDistance)
-        {
-            float newLastSpawnX = leftSpawnIndex * tileWidth;
-            if (newLastSpawnX < lastSpawnX - tileWidth)
-            {
-                lastSpawnX = newLastSpawnX;
-                SpawnTile(lastSpawnX);
-            }
-        }
-
-        CleanBehind();
+        int centerIndex = WorldXToIndex(player.position.x);
+        EnsureTiles(centerIndex);
+        CleanupFar(centerIndex);
     }
 
-    private bool IsTileAlreadySpawned(float spawnX)
+    private int WorldXToIndex(float worldX)
     {
-        foreach (var bg in bgList)
+        return Mathf.RoundToInt((worldX - baseX) / tileWidth);
+    }
+
+    private float IndexToWorldX(int index)
+    {
+        return baseX + index * tileWidth;
+    }
+
+    private void EnsureTiles(int centerIndex)
+    {
+        int range = Mathf.CeilToInt(spawnAheadDistance / tileWidth) + 2;
+        int min = centerIndex - range;
+        int max = centerIndex + range;
+
+        for (int i = min; i <= max; i++)
         {
-            if (bg != null && Mathf.Abs(bg.transform.position.x - spawnX) < 0.1f)
+            SpawnTileIfMissing(i);
+        }
+    }
+
+    private void SpawnTileIfMissing(int index)
+    {
+        float x = IndexToWorldX(index);
+        bool flip = (Mathf.Abs(index) % 2) == 1; // first tile (index 0) not flipped, next flipped, ...
+
+        if (!bgByIndex.ContainsKey(index))
+        {
+            GameObject bg = Instantiate(bgTemplate.gameObject, transform);
+            bg.name = $"BG_{index}";
+            bg.SetActive(true);
+            bg.transform.position = new Vector3(x, bgTemplate.transform.position.y, bgTemplate.transform.position.z);
+
+            SpriteRenderer sr = bg.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.flipX = flip;
+
+            bgByIndex[index] = bg;
+        }
+
+        if (!groundByIndex.ContainsKey(index))
+        {
+            GameObject ground = Instantiate(groundTemplate, transform);
+            ground.name = $"Ground_{index}";
+            ground.SetActive(true);
+            ground.transform.position = new Vector3(x, groundTemplate.transform.position.y, groundTemplate.transform.position.z);
+
+            SpriteRenderer gsr = ground.GetComponent<SpriteRenderer>();
+            if (gsr != null) gsr.flipX = flip;
+
+            groundByIndex[index] = ground;
+        }
+
+        if (boxTemplate != null && !boxesByIndex.ContainsKey(index))
+        {
+            if (Random.value > boxSpawnChancePerTile)
+                return; // don't record this tile; allow retry if tile is revisited
+
+            boxesByIndex[index] = new List<GameObject>();
+            int count = Mathf.RoundToInt(Random.Range(boxCountRange.x, boxCountRange.y));
+            count = Mathf.Clamp(count, 0, 10);
+            count = Mathf.Max(minBoxesPerChosenTile, count);
+
+            for (int k = 0; k < count; k++)
+            {
+                // spawn within this tile bounds
+                float half = tileWidth * 0.5f;
+                float localX = Random.Range(-half * 0.75f, half * 0.75f);
+                float bx = x + localX;
+
+                GameObject box = Instantiate(boxTemplate, transform);
+                box.name = $"Box_{index}_{k}";
+                box.SetActive(true);
+                ApplyObstacleIdentity(box);
+                if (!string.IsNullOrEmpty(boxTag))
+                {
+                    // Only assign if tag exists in project; otherwise Unity will throw.
+                    try { box.tag = boxTag; } catch { /* ignore */ }
+                }
+                // Use Z=0 by default for 2D visibility unless the template has a specific Z you need.
+                float bz = Mathf.Approximately(boxTemplate.transform.position.z, 0f) ? 0f : boxTemplate.transform.position.z;
+                float by = placeBoxesOnGroundTop ? (cachedGroundTopY + cachedBoxHalfHeight) : boxYPosition;
+                Vector3 spawnPos = new Vector3(bx, by, bz);
+
+                if (avoidSpawningBoxesOnCharacters && WouldOverlapCharacter(spawnPos))
+                    continue;
+
+                box.transform.position = spawnPos;
+
+                ConfigureSpawnedBoxPhysics(box);
+
+                boxesByIndex[index].Add(box);
+            }
+        }
+    }
+
+    private void ApplyObstacleIdentity(GameObject box)
+    {
+        int layerToUse = boxLayer;
+        if (!string.IsNullOrWhiteSpace(boxLayerName))
+        {
+            int named = LayerMask.NameToLayer(boxLayerName);
+            if (named != -1) layerToUse = named;
+        }
+
+        // Apply to whole hierarchy so any child collider also counts as obstacle
+        foreach (Transform t in box.GetComponentsInChildren<Transform>(true))
+            t.gameObject.layer = layerToUse;
+    }
+
+    private bool WouldOverlapCharacter(Vector3 boxPos)
+    {
+        // Quick check: avoid spawning right on the player or any enemy-like object.
+        Collider2D[] hits = Physics2D.OverlapCircleAll(boxPos, avoidCharacterRadius);
+        foreach (var h in hits)
+        {
+            if (h == null) continue;
+            if (h.isTrigger) continue;
+
+            if (h.CompareTag("Player"))
+                return true;
+
+            // Generic detection without requiring teammates to share exact tags/layers:
+            // any object with "Enemy" in its name or an EnemyHealth component counts.
+            if (h.GetComponentInParent<EnemyHealth>() != null)
+                return true;
+
+            string n = h.gameObject.name;
+            if (!string.IsNullOrEmpty(n) && n.ToLowerInvariant().Contains("enemy"))
                 return true;
         }
         return false;
     }
 
-    private void SpawnTile(float spawnX)
+    private void ConfigureSpawnedBoxPhysics(GameObject box)
     {
-        // Spawn BG - create new GameObject with SpriteRenderer (no Instantiate needed)
-        GameObject newBg = new GameObject("BG_" + Mathf.Round(spawnX));
-        SpriteRenderer bgSr = newBg.AddComponent<SpriteRenderer>();
-        bgSr.sprite = bgTemplate.sprite;
-        bgSr.color = bgTemplate.color;
-        bgSr.sortingLayerID = bgTemplate.sortingLayerID;
-        bgSr.sortingOrder = bgTemplate.sortingOrder;
-        
-        newBg.transform.position = new Vector3(
-            Mathf.Round(spawnX * 100f) / 100f,
-            bgY,
-            bgTemplate.transform.position.z
-        );
-        newBg.transform.localScale = bgTemplate.transform.localScale;
+        // Ensure boxes are static colliders (so movers rebound cleanly and boxes don't jitter).
+        Rigidbody2D rb2d = box.GetComponent<Rigidbody2D>();
+        if (rb2d == null)
+            rb2d = box.AddComponent<Rigidbody2D>();
+        rb2d.bodyType = RigidbodyType2D.Static;
+        rb2d.simulated = true;
 
-        // Flip X based on tile index for seamless pattern
-        int tileIndex = Mathf.RoundToInt(spawnX / tileWidth);
-        Vector3 scale = bgTemplate.transform.localScale;
-        if (tileIndex % 2 == 1)
-            scale.x = -Mathf.Abs(scale.x);
-        else
-            scale.x = Mathf.Abs(scale.x);
-        newBg.transform.localScale = scale;
+        // Ensure collider exists and is non-trigger; apply low friction if requested.
+        Collider2D col = box.GetComponent<Collider2D>();
+        if (col == null)
+            col = box.AddComponent<BoxCollider2D>();
+        col.isTrigger = false;
 
-        newBg.transform.parent = transform;
-        bgList.Add(newBg);
+        if (forceLowFrictionBoxes && lowFrictionMaterial != null)
+            col.sharedMaterial = lowFrictionMaterial;
+    }
 
-        // Spawn Ground (collider only, invisible)
-        GameObject newGround = new GameObject("Ground_" + Mathf.Round(spawnX));
-        // Copy BoxCollider2D from template
-        BoxCollider2D templateCollider = groundTemplate.GetComponent<BoxCollider2D>();
-        if (templateCollider != null)
+    private void CleanupFar(int centerIndex)
+    {
+        int range = Mathf.CeilToInt(spawnAheadDistance / tileWidth) + 4;
+        int minKeep = centerIndex - range;
+        int maxKeep = centerIndex + range;
+
+        CleanupDict(bgByIndex, minKeep, maxKeep);
+        CleanupDict(groundByIndex, minKeep, maxKeep);
+
+        // Boxes
+        var keys = new List<int>(boxesByIndex.Keys);
+        foreach (int idx in keys)
         {
-            BoxCollider2D newCollider = newGround.AddComponent<BoxCollider2D>();
-            // Copy collider settings
-            newCollider.size = templateCollider.size;
-            newCollider.offset = templateCollider.offset;
-            newCollider.isTrigger = templateCollider.isTrigger;
-            newCollider.usedByComposite = templateCollider.usedByComposite;
-            newCollider.edgeRadius = templateCollider.edgeRadius;
-        }
-        newGround.transform.position = new Vector3(
-            Mathf.Round(spawnX * 100f) / 100f,
-            groundY,
-            groundTemplate.transform.position.z
-        );
-        newGround.transform.localScale = groundTemplate.transform.localScale;
-        newGround.transform.parent = transform;
-        groundList.Add(newGround);
-
-        // Spawn Boxes
-        if (boxTemplate != null)
-        {
-            SpawnBoxes(spawnX);
+            if (idx >= minKeep && idx <= maxKeep) continue;
+            foreach (var b in boxesByIndex[idx])
+                if (b != null) Destroy(b);
+            boxesByIndex.Remove(idx);
         }
     }
 
-    private void SpawnBoxes(float tileX)
+    private void CleanupDict(Dictionary<int, GameObject> dict, int minKeep, int maxKeep)
     {
-        if (boxTemplate == null) return;
-
-        // Get box width from collider (more accurate for collision)
-        BoxCollider2D boxCollider = boxTemplate.GetComponent<BoxCollider2D>();
-        float actualBoxWidth = boxCollider != null ? boxCollider.size.x * Mathf.Abs(boxTemplate.transform.localScale.x) : boxTemplate.bounds.size.x;
-        if (actualBoxWidth <= 0) return;
-
-        float minGap = Mathf.Max(0.5f, boxSpawnRangeX.x); // never less than 0.5 units
-        float maxGap = Mathf.Max(minGap, boxSpawnRangeX.y);
-
-        float currentX = tileX - tileWidth / 2 + actualBoxWidth / 2 + minGap;
-        float endX = tileX + tileWidth / 2 - actualBoxWidth / 2 - minGap;
-
-        while (currentX < endX)
+        var keys = new List<int>(dict.Keys);
+        foreach (int idx in keys)
         {
-            if (UnityEngine.Random.value <= boxSpawnChance)
-            {
-                GameObject newBox = new GameObject("Box_" + Mathf.Round(currentX));
-                SpriteRenderer boxSr = newBox.AddComponent<SpriteRenderer>();
-                boxSr.sprite = boxTemplate.sprite;
-                boxSr.color = boxTemplate.color;
-                boxSr.sortingLayerID = boxTemplate.sortingLayerID;
-                boxSr.sortingOrder = 1; // Boxes in front
-
-                newBox.transform.position = new Vector3(
-                    Mathf.Round(currentX * 100f) / 100f,
-                    boxYPosition,
-                    boxZ
-                );
-                newBox.transform.localScale = boxTemplate.transform.localScale;
-                newBox.transform.parent = transform;
-
-                // Add BoxCollider2D for collision
-                if (boxCollider != null)
-                {
-                    BoxCollider2D newCollider = newBox.AddComponent<BoxCollider2D>();
-                    newCollider.size = boxCollider.size;
-                    newCollider.offset = boxCollider.offset;
-                    newCollider.isTrigger = boxCollider.isTrigger;
-                }
-
-                boxList.Add(newBox);
-
-                // Always move by collider width + at least min gap (never overlap)
-                float gap = UnityEngine.Random.Range(minGap, maxGap);
-                currentX += actualBoxWidth + gap;
-            }
-            else
-            {
-                // Skip ahead by at least min gap
-                float gap = UnityEngine.Random.Range(minGap, maxGap);
-                currentX += gap;
-            }
-        }
-    }
-
-    private void CleanBehind()
-    {
-        if (player == null) return;
-
-        float cleanMinX = player.position.x - spawnAheadDistance * 2;
-        float cleanMaxX = player.position.x + spawnAheadDistance * 2;
-
-        CleanList(bgList, cleanMinX, cleanMaxX);
-        CleanList(groundList, cleanMinX, cleanMaxX);
-        CleanList(boxList, cleanMinX, cleanMaxX);
-    }
-
-    private void CleanList(List<GameObject> list, float minX, float maxX)
-    {
-        for (int i = list.Count - 1; i >= 0; i--)
-        {
-            if (list[i] == null)
-            {
-                list.RemoveAt(i);
-                continue;
-            }
-
-            float x = list[i].transform.position.x;
-            if (x < minX || x > maxX)
-            {
-                Destroy(list[i]);
-                list.RemoveAt(i);
-            }
+            if (idx >= minKeep && idx <= maxKeep) continue;
+            if (dict[idx] != null) Destroy(dict[idx]);
+            dict.Remove(idx);
         }
     }
 
     public void ResetGenerator()
     {
-        foreach (var o in bgList) if (o != null) Destroy(o);
-        foreach (var o in groundList) if (o != null) Destroy(o);
-        foreach (var o in boxList) if (o != null) Destroy(o);
+        foreach (var kv in bgByIndex) if (kv.Value != null) Destroy(kv.Value);
+        foreach (var kv in groundByIndex) if (kv.Value != null) Destroy(kv.Value);
+        foreach (var kv in boxesByIndex)
+            foreach (var b in kv.Value) if (b != null) Destroy(b);
 
-        bgList.Clear();
-        groundList.Clear();
-        boxList.Clear();
-
-        flipNextBg = true;
+        bgByIndex.Clear();
+        groundByIndex.Clear();
+        boxesByIndex.Clear();
 
         if (player != null)
         {
-            firstSpawnX = Mathf.Floor(player.position.x / tileWidth) * tileWidth;
-            lastSpawnX = firstSpawnX;
-
-            for (int i = -1; i <= 2; i++)
-            {
-                SpawnTile(firstSpawnX + i * tileWidth);
-            }
+            int centerIndex = WorldXToIndex(player.position.x);
+            EnsureTiles(centerIndex);
         }
     }
 }

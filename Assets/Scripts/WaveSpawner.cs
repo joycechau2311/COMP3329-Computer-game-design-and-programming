@@ -34,11 +34,13 @@ public class WaveSpawner : MonoBehaviour
     private float nextSpawnTime = 0f;
     private float currentSpawnRate = 2.0f;
     private GameObject player; // Cache player reference
+    private Camera cachedCam;
 
     void Start()
     {
         // Find and cache player (update in Update() to ensure it's always valid)
         player = GameObject.FindGameObjectWithTag("Player"); // Ensure player has "Player" tag
+        cachedCam = GetActiveCamera();
 
         if (IsSpawnedClone())
         {
@@ -71,6 +73,8 @@ public class WaveSpawner : MonoBehaviour
         // Keep player reference updated (in case player is reloaded)
         if (player == null)
             player = GameObject.FindGameObjectWithTag("Player");
+        if (cachedCam == null || !cachedCam.isActiveAndEnabled)
+            cachedCam = GetActiveCamera();
 
         string currentScene = SceneManager.GetActiveScene().name;
         bool isBossScene = currentScene == bossSceneName || currentScene.Contains("Boss");
@@ -151,9 +155,19 @@ public class WaveSpawner : MonoBehaviour
     {
         if (BossHealth.bossIsDead) return;
 
-        // For non-boss scenes: use original spawn logic (but force left movement)
-        Vector3 spawnPos = GetSpawnPosition(true); // Force spawn left (enemies move right)
-        int sideDirection = -1; // Force movement to left (toward player)
+        // For non-boss scenes: spawn from left/right if provided, otherwise fall back to camera edges.
+        bool canLeft = leftSpawnPoint != null;
+        bool canRight = rightSpawnPoint != null;
+        bool spawnLeft = canLeft && canRight ? (UnityEngine.Random.value < 0.5f) : canLeft;
+
+        Vector3 spawnPos = GetSpawnPosition(spawnLeft);
+        int sideDirection = -1;
+        if (player != null)
+        {
+            float dx = player.transform.position.x - spawnPos.x;
+            if (Mathf.Abs(dx) > 0.01f)
+                sideDirection = dx > 0 ? 1 : -1; // move toward player
+        }
 
         if (logSpawnDebug)
             UnityEngine.Debug.Log($"[SPAWN] Normal Scene | Spawn Pos: {spawnPos}");
@@ -173,7 +187,7 @@ public class WaveSpawner : MonoBehaviour
     {
         if (BossHealth.bossIsDead) return;
 
-        // For boss scene: ONLY spawn on right (enemies move left toward player)
+        // For boss scene: spawn on right side (default = camera right boundary if no spawn point assigned)
         Vector3 spawnPos = GetPlayerRelativeSpawnPosition();
         int sideDirection = -1; // Force movement LEFT (toward player)
 
@@ -205,28 +219,17 @@ public class WaveSpawner : MonoBehaviour
     // CORE LOGIC: Calculate spawn position (follows player movement)
     Vector3 GetPlayerRelativeSpawnPosition()
     {
-        // Fallback if player is missing (use initial fixed X)
-        float playerX = 0f;
-        if (player != null)
+        // If a right spawn point is assigned, use it.
+        if (rightSpawnPoint != null)
         {
-            playerX = player.transform.position.x; // Get player's current X (forward movement)
-        }
-        else
-        {
-            UnityEngine.Debug.LogWarning("[SPAWN] Player not found - using fallback spawn X");
+            Vector3 p = rightSpawnPoint.position;
+            p.y = UnityEngine.Random.Range(minSpawnY, maxSpawnY);
+            p.z = 0f;
+            return p;
         }
 
-        // Calculate final spawn X: initial fixed X + player's X + offset
-        float finalSpawnX = initialFixedSpawnX + playerX + spawnXOffsetFromPlayer;
-
-        // Add small random tweak (optional - makes spawns natural)
-        finalSpawnX += UnityEngine.Random.Range(-spawnXRandomTweak, spawnXRandomTweak);
-
-        // Random Y between min/max (your requirement)
-        float randomSpawnY = UnityEngine.Random.Range(minSpawnY, maxSpawnY);
-
-        // Return final spawn position (Z = 0 for 2D)
-        return new Vector3(finalSpawnX, randomSpawnY, 0f);
+        // Default: camera right boundary if not assigned in inspector.
+        return GetCameraBoundarySpawnPosition(spawnLeft: false);
     }
 
     // Original spawn position logic (for non-boss scenes)
@@ -234,19 +237,34 @@ public class WaveSpawner : MonoBehaviour
     {
         Transform spawnPoint = spawnLeft ? leftSpawnPoint : rightSpawnPoint;
         if (spawnPoint != null)
-            return spawnPoint.position;
-
-        Camera cam = GetActiveCamera();
-        if (cam != null)
         {
-            float horizontalOffset = cam.orthographicSize * cam.aspect * 1.1f;
-            float verticalOffset = cam.orthographicSize * 0.75f;
-            Vector3 center = cam.transform.position;
-            return new Vector3(center.x + (spawnLeft ? -horizontalOffset : horizontalOffset), center.y + verticalOffset, 0f);
+            Vector3 p = spawnPoint.position;
+            p.y = UnityEngine.Random.Range(minSpawnY, maxSpawnY);
+            p.z = 0f;
+            return p;
         }
 
-        // Final fallback
-        return new Vector3(spawnLeft ? -8f : 8f, UnityEngine.Random.Range(minSpawnY, maxSpawnY), 0f);
+        // Default: camera boundary if nothing is assigned in the header.
+        return GetCameraBoundarySpawnPosition(spawnLeft);
+    }
+
+    Vector3 GetCameraBoundarySpawnPosition(bool spawnLeft)
+    {
+        Camera cam = cachedCam != null ? cachedCam : GetActiveCamera();
+        if (cam == null)
+        {
+            // Final fallback if no camera is found
+            return new Vector3(spawnLeft ? -8f : 8f, UnityEngine.Random.Range(minSpawnY, maxSpawnY), 0f);
+        }
+
+        float randomSpawnY = UnityEngine.Random.Range(minSpawnY, maxSpawnY);
+        Vector3 viewport = new Vector3(spawnLeft ? 0f : 1f, 0.5f, Mathf.Abs(cam.transform.position.z));
+        Vector3 worldEdge = cam.ViewportToWorldPoint(viewport);
+
+        // Small outward margin so enemies don't pop in clipped by the edge
+        float margin = 0.5f;
+        float x = worldEdge.x + (spawnLeft ? -margin : margin);
+        return new Vector3(x, randomSpawnY, 0f);
     }
 
     // Helper: Set enemy movement direction (force left for boss scene)
