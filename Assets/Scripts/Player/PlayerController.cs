@@ -105,6 +105,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             anim.SetTrigger("Shoot");
+            StartCoroutine(FireBulletAfterDelay(0.5f)); // adjust delay
         }
 
         // Animator
@@ -165,13 +166,16 @@ public class PlayerController : MonoBehaviour
     // ... (keep your FireBullet and OnCollisionEnter2D as they are)
     public void FireBullet()
     {
-        if (Time.time - lastFireTime < fireCooldown) return;
+        if (Time.time - lastFireTime < fireCooldown)
+            return;
 
         lastFireTime = Time.time;
+
         float offsetX = right ? 1.5f : -1.5f;
         Vector3 spawnPos = transform.position + new Vector3(offsetX, 0f, 0f);
 
         GameObject newBullet = Instantiate(bullet, spawnPos, Quaternion.identity);
+
         bulletScript bs = newBullet.GetComponent<bulletScript>();
         if (bs != null)
         {
@@ -181,6 +185,13 @@ public class PlayerController : MonoBehaviour
 
         bulletsShotToEnemy++;
     }
+
+    IEnumerator FireBulletAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        FireBullet();
+    }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -193,6 +204,5 @@ public class PlayerController : MonoBehaviour
             if (playerHealth != null)
                 playerHealth.TakeDamage(dashDamageTaken);
         }
-
     }
 }

@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
                 transitionAnimator = transitionObj.GetComponent<Animator>();
             }
         }
-        
+
         Debug.Log($"Scene: {scene.name} | Animator Assigned: {transitionAnimator != null}");
     }
 

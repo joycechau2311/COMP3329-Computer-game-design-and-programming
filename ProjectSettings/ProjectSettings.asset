@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 26
-  productGUID: 5e867b251e2fa481e90533451869fe50
+  productGUID: 5bfd1c1e3825f83428aeaade7bbd6b30
   AndroidProfiler: 0
   hmiUseInternalProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
@@ -14,7 +14,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Game design
+  productName: debug
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -694,14 +694,14 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Game design
+  metroPackageName: debug
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: Game design
+  metroApplicationDescription: debug
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0

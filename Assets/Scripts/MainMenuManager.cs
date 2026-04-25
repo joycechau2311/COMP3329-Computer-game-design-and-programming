@@ -11,7 +11,12 @@ public class MainMenuManager : MonoBehaviour
     public void StartGame()
     {
         // This tells Tuanjie to load your gameplay scene
-        SceneManager.LoadScene(gameSceneName);
+        SceneManager.LoadScene("Level_1");
+    }
+
+    public void ShowCredits()
+    {
+        SceneManager.LoadScene("CreditsScene");
     }
 
     // --- FUNCTION FOR THE EXIT BUTTON ---

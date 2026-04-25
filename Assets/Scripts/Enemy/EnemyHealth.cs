@@ -12,7 +12,7 @@ public class EnemyHealth : MonoBehaviour
     public bool gotHit = false;
 
     [Header("Settings")]
-    public float hitDuration = 0.1f; // How long the hit animation stays active
+    public float hitDuration = 1f; // How long the hit animation stays active
 
     void Start()
     {

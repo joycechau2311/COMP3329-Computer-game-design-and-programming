@@ -50,6 +50,7 @@ public class EnemyAttack : MonoBehaviour
         return Time.time - lastAttackTime >= attackCooldown;
     }
 
+    // 可選：如果之後想讓敵人追擊時才攻擊，可以加這個公開方法給 EnemyMovement 使用
     public bool IsPlayerInRange(float attackRange)
     {
         if (playerTransform == null) return false;

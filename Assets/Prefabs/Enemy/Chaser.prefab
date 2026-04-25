@@ -89,7 +89,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.39, y: 0.42285714}
+  m_Size: {x: 0.32, y: 0.32}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -129,17 +129,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeLayer: 0
-  m_Offset: {x: 0.018744487, y: 0.010129064}
+  m_Offset: {x: 0.03920698, y: 0.00030703843}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 0.39, y: 0.42285714}
-    newSize: {x: 0.39, y: 0.42285714}
+    newSize: {x: 0.32, y: 0.32}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.24254957, y: 0.290357}
+  m_Size: {x: 0.2834745, y: 0.39512512}
   m_EdgeRadius: 0
 --- !u!50 &886013207074856546
 Rigidbody2D:
@@ -188,12 +188,12 @@ MonoBehaviour:
   boxCheckDistance: 2
   boxLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 32768
   jumpForce: 7
   groundCheck: {fileID: 8766158456915887115}
   groundMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1081344
   radius: 0.5
 --- !u!114 &669558451632931800
 MonoBehaviour:

@@ -21,7 +21,7 @@ public class EnemyChaser : MonoBehaviour
     [Header("Obstacle Jumping")]
     public float boxCheckDistance = 1.0f;  // how far ahead to detect box
     public LayerMask boxLayer;             // layer of your boxes
-    public float jumpForce = 4.5f;         // how high the enemy jumps (reduced so jump arc is less extreme)
+    public float jumpForce = 7f;           // how high the enemy jumps
     private bool isGrounded = true;        // simple ground check
     public Transform groundCheck;
     public LayerMask groundMask;
