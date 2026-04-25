@@ -817,12 +817,20 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6307708002460189197, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.7352233
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307708002460189197, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.9298592
+      objectReference: {fileID: 0}
+    - target: {fileID: 6307708002460189197, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.28
+      value: -10.15
       objectReference: {fileID: 0}
     - target: {fileID: 6307708002460189197, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.47
+      value: -2.5
       objectReference: {fileID: 0}
     - target: {fileID: 6307708002460189197, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -855,6 +863,22 @@ PrefabInstance:
     - target: {fileID: 6307708002460189197, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6330111643958530609, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
+      propertyPath: m_Size.x
+      value: 0.80665684
+      objectReference: {fileID: 0}
+    - target: {fileID: 6330111643958530609, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
+      propertyPath: m_Size.y
+      value: 0.9617193
+      objectReference: {fileID: 0}
+    - target: {fileID: 6330111643958530609, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.06964362
+      objectReference: {fileID: 0}
+    - target: {fileID: 6330111643958530609, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
+      propertyPath: m_Offset.y
+      value: -0.006997466
       objectReference: {fileID: 0}
     - target: {fileID: 6659493717066026308, guid: b8ff1f5808d5b48079ca4a94ffd7a2e6, type: 3}
       propertyPath: attackCooldown
