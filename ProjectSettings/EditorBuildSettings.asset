@@ -7,10 +7,16 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 0
     path: Assets/Scenes/SampleScene.scene
-    guid: 2cda990e2423bbf4892e6590ba056729
+    guid: ddb877f69441ec84e95beddd329dc21b
+  - enabled: 0
+    path: Assets/Scenes/MainMenu.scene
+    guid: 4827fc3f128827741ba8ab0b9ddc1cab
   - enabled: 1
     path: Assets/Levels/MainMenu.scene
-    guid: 4827fc3f128827741ba8ab0b9ddc1cab
+    guid: 8c51e321d8f26a34aa259b86aa1fb868
+  - enabled: 1
+    path: Assets/Levels/OpeningScene.scene
+    guid: c2a2f2ac06e42447684a85d66b6b2ad1
   - enabled: 1
     path: Assets/Levels/Level_1.scene
     guid: 2eb153dbc0883491b8ea7e04f87810a3
@@ -22,7 +28,7 @@ EditorBuildSettings:
     guid: bc8f059ae95e94cfd8af79576f19f425
   - enabled: 1
     path: Assets/Levels/Level_4.scene
-    guid: 890b1f833f89d4d0aadf1b5b352f7ff8
+    guid: c1ddb13988e5c48d1841a7522d1ea358
   - enabled: 1
     path: Assets/Levels/CreditsScene.scene
     guid: 9ab65e3cdf30a2344a3004831b64e335
