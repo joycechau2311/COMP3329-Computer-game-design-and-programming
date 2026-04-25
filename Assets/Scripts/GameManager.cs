@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -5,26 +6,56 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public int SavedStudents { get; private set; } = 0;
+    [Header("Scene Transition")]
+    public Animator transitionAnimator;
+    public float transitionTime = 1.2f;
+
+    [Header("Game Status")]
+    public int savedStudents = 0;
 
     private void Awake()
     {
+        // Singleton pattern
         if (Instance != null && Instance != this)
         {
-            Debug.Log("Duplicate GameManager detected. Destroying this one.");
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Debug.Log("GameManager successfully initialized (DontDestroyOnLoad)");
+
+        // Subscribe to the sceneLoaded event
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    public void AddSavedStudent(int amount = 1)
+    public void AddSavedStudent()
     {
-        SavedStudents += amount;
-        Debug.Log($"Saved students count: {SavedStudents}");
+        savedStudents++;
+        Debug.Log($"Student Saved! Total: {savedStudents}");
+
+        // This is where you would trigger a UI update if you have one
+        //UIManager.UpdateStudentDisplay(savedStudents);
+    }
+
+    public void ResetStudentCount()
+    {
+        savedStudents = 0;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // CRITICAL: Every time a scene loads, we must find the NEW animator in that scene
+        if (transitionAnimator == null)
+        {
+            // Make sure your Transition Canvas/Object has the Tag "Transition"
+            GameObject transitionObj = GameObject.FindGameObjectWithTag("Transition");
+            if (transitionObj != null)
+            {
+                transitionAnimator = transitionObj.GetComponent<Animator>();
+            }
+        }
+        
+        Debug.Log($"Scene: {scene.name} | Animator Assigned: {transitionAnimator != null}");
     }
 
     public void LoadNextLevel()
@@ -34,21 +65,28 @@ public class GameManager : MonoBehaviour
 
         if (nextIndex < SceneManager.sceneCountInBuildSettings)
         {
-            Debug.Log($"Loading next scene: Index {nextIndex}");
-            SceneManager.LoadScene(nextIndex);
-        }
-        else
-        {
-            Debug.Log("This is the last level! Going to ending...");
-            // 之後可以改成載入 Ending Scene
+            StartCoroutine(LoadLevelWithTransition(nextIndex));
         }
     }
 
-    // 遊戲結束時可呼叫（boss 組打完後用）
-    public void GameOver(bool playerWin)
+    IEnumerator LoadLevelWithTransition(int levelIndex)
     {
-        // 你可以之後再加 Ending Scene，這裡先 Debug
-        Debug.Log(playerWin ? "Good Ending！考試成功" : "Bad Ending…考試泡湯");
-        // SceneManager.LoadScene("EndingScene"); // 之後再加
+        if (transitionAnimator != null)
+        {
+            transitionAnimator.SetTrigger("Start");
+        }
+        else
+        {
+            Debug.LogWarning("No Animator found in this scene! Loading instantly.");
+        }
+
+        yield return new WaitForSeconds(transitionTime);
+        SceneManager.LoadScene(levelIndex);
+    }
+
+    private void OnDestroy()
+    {
+        // Always unsubscribe to prevent memory leaks or errors
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

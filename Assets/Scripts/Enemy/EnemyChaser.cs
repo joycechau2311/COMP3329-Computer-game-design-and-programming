@@ -1,6 +1,7 @@
+using System.Diagnostics;
 using UnityEngine;
 
-public class EnemyChaserMovement : MonoBehaviour
+public class EnemyChaser : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
@@ -8,10 +9,13 @@ public class EnemyChaserMovement : MonoBehaviour
     [SerializeField] private Transform player;   // Assign in Inspector or auto-find
     private EnemyHealth health;
 
+    private bool initialFlipX;
+    private bool assetFacesRightByDefault;
+
     [Header("Settings")]
     [SerializeField] private float speed = 3f;
 
-    public float visionRange = 8f;
+    public float visionRange = 20f;
     private bool canSeePlayer = false;
 
     [Header("Obstacle Jumping")]
@@ -25,16 +29,36 @@ public class EnemyChaserMovement : MonoBehaviour
 
     private void Start()
     {
+        if (rb == null)
+            rb = GetComponent<Rigidbody2D>();
+
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            initialFlipX = spriteRenderer.flipX;
+            assetFacesRightByDefault = !initialFlipX;
+        }
+
         health = GetComponent<EnemyHealth>();
+
+        player = FindPlayerTransform();
     }
 
     private void Update()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, radius, groundMask);
+        if (groundCheck != null)
+            isGrounded = Physics2D.OverlapCircle(groundCheck.position, radius, groundMask);
+        else
+            isGrounded = true;
     }
 
     private void FixedUpdate()
     {
+        if (player == null)
+            player = FindPlayerTransform();
+
         if (CanSeePlayer())
         {
             canSeePlayer = true;
@@ -45,35 +69,35 @@ public class EnemyChaserMovement : MonoBehaviour
             // 1. STOP if dead or in hit animation
             if (health != null && (health.isDead || health.gotHit))
             {
-                rb.velocity = Vector2.zero;
+                if (rb != null)
+                    rb.velocity = Vector2.zero;
                 return;
             }
 
-            // 2. Auto-find player
-            GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null)
-                player = p.transform;
-
-            if (player == null)
+            if (player == null || rb == null)
             {
-                rb.velocity = Vector2.zero;
+                if (rb != null)
+                    rb.velocity = Vector2.zero;
                 return;
             }
 
-            // If box detected, try to jump before hitting it
-            if (IsBoxInFront() && isGrounded)
+            Vector2 chaseDirection = (player.position - transform.position).normalized;
+            Vector2 movementDirection = new Vector2(chaseDirection.x, 0f).normalized;
+            if (movementDirection.sqrMagnitude == 0f)
+                movementDirection = Vector2.right;
+
+            // If box detected ahead, try to jump before hitting it
+            if (IsBoxInFront(movementDirection) && isGrounded)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-                Debug.Log("Chaser jumps over box!");
+                UnityEngine.Debug.Log("Chaser jumps over box!");
             }
 
             // 4. Chase movement
-            Debug.Log("Chasing player");
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.velocity = new Vector2(direction.x * speed, rb.velocity.y);
-            spriteRenderer.flipX = direction.x < 0;
+            rb.velocity = new Vector2(chaseDirection.x * speed, rb.velocity.y);
+            if (spriteRenderer != null)
+                spriteRenderer.flipX = assetFacesRightByDefault ? (chaseDirection.x < 0) : (chaseDirection.x > 0);
         }
-
     }
 
 
@@ -81,38 +105,53 @@ public class EnemyChaserMovement : MonoBehaviour
     {
         if (collision.collider.CompareTag("Player"))
         {
-            Debug.Log("Chaser collided with player!");
-            GetComponent<EnemyAttack>().TryAttack();  // attack on hit
+            UnityEngine.Debug.Log("Chaser collided with player!");
+            if (TryGetComponent<EnemyAttack>(out EnemyAttack attack))
+                attack.TryAttack();
         }
+    }
 
-        if (collision.collider.CompareTag("Ground")) // stop if collide with wall
-        {
-            rb.velocity = Vector2.zero;
-        }
+    public void SetSpeed(float newSpeed)
+    {
+        speed = Mathf.Max(0f, newSpeed);
     }
 
     bool CanSeePlayer()
     {
+        if (player == null)
+            return false;
+
         Vector3 dir = player.position - transform.position;
         float distance = dir.magnitude;
 
-        return distance < visionRange; 
+        return distance < visionRange;
+    }
+
+    private Transform FindPlayerTransform()
+    {
+        GameObject p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null)
+            return p.transform;
+
+        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+        if (playerHealth != null)
+            return playerHealth.transform;
+
+        return null;
     }
 
 
-    bool IsBoxInFront()
+    bool IsBoxInFront(Vector2 movementDirection)
     {
-        Vector2 direction = spriteRenderer.flipX ? Vector2.left : Vector2.right;
+        Vector2 direction = movementDirection.x < 0 ? Vector2.left : Vector2.right;
 
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, boxCheckDistance, boxLayer);
 
         if (hit.collider != null)
         {
-            //Debug.DrawLine(transform.position, transform.position + (Vector3)direction * boxCheckDistance, Color.red);
             return true;
         }
 
-        //Debug.DrawLine(transform.position, transform.position + (Vector3)direction * boxCheckDistance, Color.green);
         return false;
     }
 

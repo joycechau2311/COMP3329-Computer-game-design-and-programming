@@ -5,7 +5,7 @@ public class MainMenuManager : MonoBehaviour
 {
     [Header("Settings")]
     // TYPE THE EXACT NAME OF YOUR GAME SCENE HERE:
-    public string gameSceneName = "GameScene"; 
+    public string gameSceneName = "GameScene";
 
     // --- FUNCTION FOR THE START BUTTON ---
     public void StartGame()

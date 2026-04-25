@@ -1,15 +1,27 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
     public GameObject pauseUI;
     public GameObject gameOverUI;
     public Slider healthSlider;
+    public TextMeshProUGUI levelText;
     public Image healthFill;
 
+    [Header("Student Stats")]
+    public TextMeshProUGUI studentSavedText; // Drag your TextMeshPro counter here
+
+
     private bool isPaused = false;
+
+    private void Start()
+    {
+        UpdateLevel();
+        UpdateStudentDisplay(); // Initialize the count on start
+    }
 
     void Update()
     {
@@ -20,7 +32,23 @@ public class UIManager : MonoBehaviour
             else
                 OnGamePausePressed();
         }
+
+        // Keep the student display updated in real-time
+        // Alternatively, call UpdateStudentDisplay() from GameManager when the value changes
+        UpdateStudentDisplay();
     }
+
+    public void UpdateStudentDisplay()
+    {
+        if (studentSavedText != null && GameManager.Instance != null)
+        {
+            // Pulls the integer from GameManager and displays it
+            studentSavedText.text = GameManager.Instance.savedStudents.ToString() + "/" + 10;
+        }
+
+    }
+
+    // ==================== REST OF YOUR UI LOGIC ====================
 
     public void OnGamePausePressed()
     {
@@ -43,6 +71,9 @@ public class UIManager : MonoBehaviour
 
     public void OnGameResetPressed()
     {
+        // If your level resets, you might want to reset the count in GameManager too
+        // GameManager.Instance.ResetStudentCount(); 
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         pauseUI.SetActive(false);
         Time.timeScale = 1f;
@@ -55,7 +86,7 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    public void UpdateHealthBar(int current, int max)
+    public void UpdateHealthBar(float current, float max)
     {
         if (healthSlider != null)
         {
@@ -70,6 +101,15 @@ public class UIManager : MonoBehaviour
                 healthFill.color = Color.yellow;
             else
                 healthFill.color = Color.red;
+        }
+    }
+
+    public void UpdateLevel()
+    {
+        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        if (levelText != null)
+        {
+            levelText.text = "Level " + currentLevelIndex;
         }
     }
 }

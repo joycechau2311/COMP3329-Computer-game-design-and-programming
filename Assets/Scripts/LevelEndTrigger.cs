@@ -1,24 +1,28 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LevelEndTrigger : MonoBehaviour
 {
+    [Header("Settings")]
+    //public float delayBeforeTransition = 0.8f;     // Small delay so player feels the gate
+
+    [Header("Optional")]
+    public bool playSoundOnEnter = true;
+
+    private bool hasTriggered = false;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Player"))
-            return;
-
-        Debug.Log("LevelEndTrigger: Player entered the end trigger!");
-
-        // 安全檢查 GameManager
-        if (GameManager.Instance == null)
+        if (other.CompareTag("Player"))
         {
-            Debug.LogError("GameManager.Instance is NULL! Make sure GameManager exists in the first scene and has DontDestroyOnLoad.");
-            return;
-        }
+            Debug.Log("Player touched the gate → Starting transition");
 
-        // 可選：加一點延遲或淡出效果（之後再加）
-        GameManager.Instance.LoadNextLevel();
-        Debug.Log("Loading next level...");
+            GameManager.Instance.LoadNextLevel();
+        }
+    }
+
+    // Optional: Reset trigger (useful if you want to reuse the gate)
+    public void ResetTrigger()
+    {
+        hasTriggered = false;
     }
 }

@@ -3,8 +3,8 @@ using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 5;
-    public int currentHealth;
+    public float maxHealth = 5;
+    public float currentHealth;
     //public Animator anim;
     public bool isDead = false;
     public bool gotHit = false;
@@ -19,12 +19,12 @@ public class PlayerHealth : MonoBehaviour
         uiManager = FindObjectOfType<UIManager>(); // auto-find in scene
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         if (isDead) return;
 
         currentHealth -= damage;
-        Debug.Log("Player hit! Remaining health: " + currentHealth);
+        Debug.Log("Player got hit! Remaining health: " + currentHealth);
         uiManager.UpdateHealthBar(currentHealth, maxHealth);
 
         if (currentHealth <= 0)

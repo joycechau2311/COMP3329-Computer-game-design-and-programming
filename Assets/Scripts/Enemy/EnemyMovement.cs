@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class EnermyMovement : MonoBehaviour
@@ -13,7 +14,11 @@ public class EnermyMovement : MonoBehaviour
     private float lastAttackTime;
     private EnemyHealth health;
 
+    [Header("Obstacle Avoidance")]
+    [SerializeField] private LayerMask obstacleMask;
 
+    private bool initialFlipX;
+    private bool assetFacesRightByDefault;
     private int currentDirection;
     private float halfWidth;
     private Vector2 movement;
@@ -21,8 +26,19 @@ public class EnermyMovement : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        if (rb == null)
+            rb = GetComponent<Rigidbody2D>();
+
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
         health = GetComponent<EnemyHealth>();
-        halfWidth = spriteRenderer.bounds.extents.x;
+        if (spriteRenderer != null)
+        {
+            halfWidth = spriteRenderer.bounds.extents.x;
+            initialFlipX = spriteRenderer.flipX;
+            assetFacesRightByDefault = startDirection >= 0 ? !initialFlipX : initialFlipX;
+        }
         currentDirection = startDirection;
 
     }
@@ -39,15 +55,19 @@ public class EnermyMovement : MonoBehaviour
 
     private void SetDirection()
     {
-        if (Physics2D.Raycast(transform.position, Vector2.right, halfWidth + 0.1f, LayerMask.GetMask("Ground")) && rb.velocity.x > 0)
+        if (obstacleMask == 0 || rb == null) return;
+
+        if (currentDirection > 0 && Physics2D.Raycast(transform.position, Vector2.right, halfWidth + 0.1f, obstacleMask))
         {
-            currentDirection *= -1;
-            spriteRenderer.flipX = true;
+            currentDirection = -1;
+            if (spriteRenderer != null)
+                spriteRenderer.flipX = assetFacesRightByDefault ? true : false;
         }
-        else if (Physics2D.Raycast(transform.position, Vector2.left, halfWidth + 0.1f, LayerMask.GetMask("Ground")) && rb.velocity.x < 0)
+        else if (currentDirection < 0 && Physics2D.Raycast(transform.position, Vector2.left, halfWidth + 0.1f, obstacleMask))
         {
-            currentDirection *= -1;
-            spriteRenderer.flipX = false;
+            currentDirection = 1;
+            if (spriteRenderer != null)
+                spriteRenderer.flipX = assetFacesRightByDefault ? false : true;
         }
     }
 
@@ -68,8 +88,20 @@ public class EnermyMovement : MonoBehaviour
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(1);
-                Debug.Log("Enemy collided with player! Remaining health: " + playerHealth.currentHealth);
+                UnityEngine.Debug.Log("Enemy collided with player! Remaining health: " + playerHealth.currentHealth);
             }
         }
+    }
+
+    public void SetSpeed(float newSpeed)
+    {
+        speed = Mathf.Max(0f, newSpeed);
+    }
+
+    public void SetInitialDirection(int direction)
+    {
+        currentDirection = direction != 0 ? direction : startDirection;
+        if (spriteRenderer != null)
+            spriteRenderer.flipX = assetFacesRightByDefault ? (currentDirection < 0) : (currentDirection > 0);
     }
 }

@@ -16,7 +16,7 @@ GameObject:
   m_Layer: 0
   m_HasEditorInfo: 1
   m_Name: Bullet_001
-  m_TagString: Player
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 0930bf0b96a6f4e08861a45bfe48f8f0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 44937b933c01346feae96103e50cb252, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -125,17 +125,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeLayer: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.004602909, y: 0.0069043785}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.48, y: 0.46}
+    oldSize: {x: 0.86, y: 0.8666667}
     newSize: {x: 1.48, y: 0.46}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.48, y: 0.46}
+  m_Size: {x: 0.36609435, y: 0.44619128}
   m_EdgeRadius: 0
 --- !u!50 &-7112621330356736188
 Rigidbody2D:
@@ -176,6 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ef94dacc110494fad55a22609b22a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 3
   shootDirection: 1
   damage: 1
+  bossSceneName: Level_4

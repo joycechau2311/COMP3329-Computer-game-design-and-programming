@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyAttack : MonoBehaviour
 {
     [Header("Attack Settings")]
-    public int attackDamage = 1;
+    public float attackDamage = 1f;
     public float attackCooldown = 1.2f;     
 
     private float lastAttackTime = 0f;
@@ -50,7 +50,6 @@ public class EnemyAttack : MonoBehaviour
         return Time.time - lastAttackTime >= attackCooldown;
     }
 
-    // 可選：如果之後想讓敵人追擊時才攻擊，可以加這個公開方法給 EnemyMovement 使用
     public bool IsPlayerInRange(float attackRange)
     {
         if (playerTransform == null) return false;
