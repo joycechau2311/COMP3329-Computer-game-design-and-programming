@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Enemy
+  - Ground
+  - Obstacle
+  - Table
+  - Boss
+  - Bullet
+  - Transition
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Gate
+  - Enemy
+  - 
+  - Player
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Obstacle
+  - 
+  - 
+  - 
+  - 
+  - Ground
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Background
+    uniqueID: 2281443775
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Gate
+    uniqueID: 3774194031
+    locked: 0
+  - name: Player
+    uniqueID: 1648888201
+    locked: 0
