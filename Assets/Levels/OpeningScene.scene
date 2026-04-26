@@ -1897,7 +1897,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   director: {fileID: 1852291765}
-  nextSceneName: Level_1
+  nextSceneName: MainMenu
 --- !u!1 &1983433475
 GameObject:
   m_ObjectHideFlags: 0
