@@ -12,11 +12,11 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.scene
     guid: 4827fc3f128827741ba8ab0b9ddc1cab
   - enabled: 1
-    path: Assets/Levels/MainMenu.scene
-    guid: 8c51e321d8f26a34aa259b86aa1fb868
-  - enabled: 1
     path: Assets/Levels/OpeningScene.scene
     guid: c2a2f2ac06e42447684a85d66b6b2ad1
+  - enabled: 1
+    path: Assets/Levels/MainMenu.scene
+    guid: 8c51e321d8f26a34aa259b86aa1fb868
   - enabled: 1
     path: Assets/Levels/Level_1.scene
     guid: 2eb153dbc0883491b8ea7e04f87810a3
