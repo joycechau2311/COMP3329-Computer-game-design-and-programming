@@ -295,7 +295,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -222.3}
+  m_AnchoredPosition: {x: 0, y: -195}
   m_SizeDelta: {x: 1800, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &44591708
@@ -318,7 +318,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: with one small problem.
+  m_text: 
   m_enableAdvanceTextProcess: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: aa18c39df19b047e2801def5e550f80d, type: 2}
@@ -889,11 +889,11 @@ RectTransform:
   - {fileID: 1702941006}
   m_Father: {fileID: 2049157043}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 99.6, y: 45.2}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -12.48999, y: 5.56}
   m_SizeDelta: {x: 35, y: 35}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &801617960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1593,11 +1593,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 801617959}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 30, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &1702941007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1769,11 +1769,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2049157043}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 98.7, y: 0.7999878}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 217, y: -80}
   m_SizeDelta: {x: 200, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &1820089806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1931,6 +1931,12 @@ PlayableDirector:
     value: {fileID: 695821284}
   - key: {fileID: -2223577935782101396, guid: b97c091ceb928461ca8da2816081584c, type: 2}
     value: {fileID: 1018382743}
+  - key: {fileID: -6338707484710892180, guid: b97c091ceb928461ca8da2816081584c, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 5138371782080793408, guid: b97c091ceb928461ca8da2816081584c, type: 2}
+    value: {fileID: 801617958}
+  - key: {fileID: 2118588708495927927, guid: b97c091ceb928461ca8da2816081584c, type: 2}
+    value: {fileID: 1820089804}
   m_ExposedReferences:
     m_References: []
 --- !u!4 &1852291766
