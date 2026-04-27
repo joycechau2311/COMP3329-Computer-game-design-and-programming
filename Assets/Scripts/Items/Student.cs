@@ -40,7 +40,7 @@ public class Student : MonoBehaviour
         Debug.Log("Student Saved!");
 
         // Optional: Update your GameManager score
-        GameManager.Instance.AddSavedStudent();
+        StudentSaveManager.Instance.SaveStudent();
 
         // Destroy after the "Saved" animation plays (adjust time as needed)
         Destroy(gameObject, 2f);

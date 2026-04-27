@@ -374,6 +374,7 @@ MonoBehaviour:
   healthSlider: {fileID: 1978793097968321642}
   levelText: {fileID: 158595909066515090}
   healthFill: {fileID: 7275366268477946830}
+  potionSlider: {fileID: 0}
   studentSavedText: {fileID: 3148670559870938885}
 --- !u!1 &2922825927760892728
 GameObject:
@@ -998,8 +999,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -1.7533035, y: 5.1996}
-  m_SizeDelta: {x: 9.9512, y: 16.5161}
+  m_AnchoredPosition: {x: -3.0117035, y: 2.2215996}
+  m_SizeDelta: {x: 12.4679, y: 10.5602}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4144557900186088671
 CanvasRenderer:

@@ -18,6 +18,7 @@ public class FollowPlayerXPosition : MonoBehaviour
         // Store the initial Y and Z positions so they never change
         _initialY = transform.position.y;
         _initialZ = transform.position.z;
+
     }
 
     private void LateUpdate()

@@ -15,17 +15,19 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern
-        if (Instance != null && Instance != this)
+        if (Instance == null)
         {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
 
-        // Subscribe to the sceneLoaded event
-        SceneManager.sceneLoaded += OnSceneLoaded;
+            Debug.Log("✅ GameManager initialized");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ Duplicate GameManager destroyed");
+            Destroy(gameObject);
+        }
     }
 
     public void AddSavedStudent()
@@ -61,6 +63,16 @@ public class GameManager : MonoBehaviour
     public void LoadNextLevel()
     {
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
+
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        // If this is the FINAL LEVEL → go to ending
+        if (currentSceneName == "Level_4")
+        {
+            LoadEnding();
+            return;
+        }
+
         int nextIndex = currentIndex + 1;
 
         if (nextIndex < SceneManager.sceneCountInBuildSettings)
@@ -84,9 +96,31 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(levelIndex);
     }
 
+    public void LoadEnding()
+    {
+        int totalSaved = StudentSaveManager.GetTotalSavedStudents();
+
+        Debug.Log("Total Saved Students: " + totalSaved);
+
+        if (totalSaved <= 5)
+        {
+            SceneManager.LoadScene("Ending_Bad");
+        }
+        else if (totalSaved >= 16)
+        {
+            SceneManager.LoadScene("Ending_True");
+        }
+        else
+        {
+            SceneManager.LoadScene("Ending_Normal");
+        }
+    }
+
     private void OnDestroy()
     {
         // Always unsubscribe to prevent memory leaks or errors
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+
+
 }

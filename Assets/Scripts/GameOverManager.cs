@@ -26,7 +26,9 @@ public class GameOverManager : MonoBehaviour
     {
         // Ask PlayerPrefs for the last level. If it doesn't exist, use the fallback.
         string sceneToLoad = PlayerPrefs.GetString("LastPlayedLevel", fallbackSceneName);
-        
+
+        StudentSaveManager.ClearLevelSaveCount(sceneToLoad);
+
         StartCoroutine(PlaySoundAndLoadScene(sceneToLoad));
     }
 

@@ -125,6 +125,10 @@ public class InfiniteScroll : MonoBehaviour
 
     private void Update()
     {
+        // ✅ Stop infinite scrolling once boss fight starts
+        if (BossManager.Instance != null && BossManager.Instance.IsBossFightActive)
+            return;
+
         if (player == null) return;
 
         if (!warnedMissingBoxTemplate && boxTemplate == null)
@@ -328,7 +332,7 @@ public class InfiniteScroll : MonoBehaviour
         foreach (var kv in groundByIndex) if (kv.Value != null) Destroy(kv.Value);
         foreach (var kv in boxesByIndex)
             foreach (var b in kv.Value) if (b != null) Destroy(b);
-
+       
         bgByIndex.Clear();
         groundByIndex.Clear();
         boxesByIndex.Clear();

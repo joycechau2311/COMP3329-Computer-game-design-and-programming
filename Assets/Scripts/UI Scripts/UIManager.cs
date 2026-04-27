@@ -17,10 +17,18 @@ public class UIManager : MonoBehaviour
     
     private bool isPaused = false;
 
+    [Header("Boss UI")]
+    public GameObject bossHealthUI;
+    public Slider bossHealthSlider;
+
     private void Start()
     {
         UpdateLevel();
         UpdateStudentDisplay(); // Initialize the count on start
+
+        // ✅ FORCE boss UI hidden before fight
+        ShowBossUI(false);
+
     }
 
     void Update()
@@ -40,12 +48,31 @@ public class UIManager : MonoBehaviour
 
     public void UpdateStudentDisplay()
     {
-        if (studentSavedText != null && GameManager.Instance != null)
-        {
-            // Pulls the integer from GameManager and displays it
-            studentSavedText.text = GameManager.Instance.savedStudents.ToString() + "/" + 10;
-        }
 
+        Debug.Log("Current Scene: " + SceneManager.GetActiveScene().name);
+        Debug.Log("StudentSaveManager exists: " + (StudentSaveManager.Instance != null));
+
+        if (studentSavedText == null) return;
+
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        if (sceneName == "Level_1" || sceneName == "Level_3")
+        {
+            if (StudentSaveManager.Instance != null)
+            {
+                studentSavedText.gameObject.SetActive(true);
+                studentSavedText.text = StudentSaveManager.Instance.savedStudents + "/10";
+            }
+            else
+            {
+                studentSavedText.text = "0/10";
+            }
+        }
+        else
+        {
+            // Hide counter in levels without student saving, e.g. Level_2
+            studentSavedText.gameObject.SetActive(false);
+        }
     }
 
     public void OnGamePausePressed()
@@ -76,7 +103,7 @@ public class UIManager : MonoBehaviour
         pauseUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
-        GameManager.Instance.savedStudents = 0;
+        StudentSaveManager.ClearLevelSaveCount(SceneManager.GetActiveScene().name);
 
     }
 
@@ -117,5 +144,19 @@ public class UIManager : MonoBehaviour
     {
         potionSlider.maxValue = max;
         potionSlider.value = current;
+    }
+
+    public void ShowBossUI(bool show)
+    {
+        if (bossHealthUI != null)
+            bossHealthUI.SetActive(show);
+    }
+
+    public void UpdateBossHealth(float current, float max)
+    {
+        if (bossHealthSlider == null) return;
+
+        bossHealthSlider.maxValue = max;
+        bossHealthSlider.value = current;
     }
 }

@@ -106,7 +106,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 48e218c5352625a4e94dfd1cc948a0ce, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -185,7 +185,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 3446877713487155752}
   player: {fileID: 342962670827686344, guid: 311263ade2b8640c1882c605b032f725, type: 3}
   speed: 3
-  visionRange: 10
+  visionRange: 15
   boxCheckDistance: 2
   boxLayer:
     serializedVersion: 2
@@ -216,7 +216,7 @@ MonoBehaviour:
   hitDuration: 0.5
   audioSource: {fileID: 8191300499200185732}
   hitSound: {fileID: 8300000, guid: ed9b31d1397ded94aaf3c6770dbae4e9, type: 3}
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: 405880ea41cc12a41ae7d7987aad40ea, type: 3}
 --- !u!114 &4656662755270851426
 MonoBehaviour:
   m_ObjectHideFlags: 0

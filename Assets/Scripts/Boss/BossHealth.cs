@@ -11,9 +11,11 @@ public class BossHealth : MonoBehaviour
     public float sleepAnimationDelay = 0.5f; // Match to your hit animation length (e.g., 0.5s)
     public float hitAnimationLayer = 1; // Hit Animation layer index (1 = second layer, Base = 0)
     public float sleepAnimationLength = 2.0f; // Length of B_Sleep animation (adjust to your anim)
+    public bool IsFightActive { get; private set; } = false;
 
     // Health change event (moved below Header to fix CS0592)
-    public event System.Action OnHealthChanged;
+    public event System.Action<float, float> OnHealthChanged;
+    public event System.Action OnBossDied;
 
     [Header("Animation Link")]
     public Animator bossAnimator;
@@ -74,29 +76,20 @@ public class BossHealth : MonoBehaviour
         UpdateBossGPAAnimation();
     }
 
+
     public void TakeDamage()
     {
-        // Prevent damage if boss is dead or invincible
         if (_isDead || _isInvincible) return;
 
-        // Update health value (round to 2 decimal places for consistency)
         _currentHealth -= damagePerBullet;
-        _currentHealth = Mathf.Round(_currentHealth * 100f) / 100f;
-        if (_currentHealth < 0.01f)
-            _currentHealth = 0f;
         _currentHealth = Mathf.Clamp(_currentHealth, 0f, maxHealth);
-        UnityEngine.Debug.Log($"💥 Boss took damage | Current Health: {_currentHealth}");
 
-        // Trigger health change event (updates UI immediately)
-        OnHealthChanged?.Invoke();
+        if (IsFightActive)
+            OnHealthChanged?.Invoke(_currentHealth, maxHealth);
 
-        // Play hit animation
         PlayHitAnimationOnCorrectLayer();
-
-        // Start invincibility frames
         StartCoroutine(InvincibilityFrames());
 
-        // Trigger death sequence if health reaches 0
         if (_currentHealth <= 0f)
             StartCoroutine(DieAfterHitAnimation());
     }
@@ -131,12 +124,13 @@ public class BossHealth : MonoBehaviour
 
     // Death sequence: Hit anim → Sleep anim → Fall to ground → Hide boss
     private System.Collections.IEnumerator DieAfterHitAnimation()
-    {   
+    {
+
         if (_isDead) yield break;
 
-        // Mark boss as dead
         _isDead = true;
         bossIsDead = true;
+
         UnityEngine.Debug.Log("☠️ Boss death sequence started");
 
         //// Force stop spawning immediately
@@ -189,10 +183,27 @@ public class BossHealth : MonoBehaviour
         if (bossCollider != null)
             bossCollider.enabled = false;
 
-        // Wait for sleep animation to complete, then hide boss
+
+        // Trigger ending EARLY (reliable)
+        UnityEngine.Debug.Log("🎬 Boss defeated → loading ending");
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.LoadEnding();
+        }
+        else
+        {
+            UnityEngine.Debug.LogError("❌ GameManager.Instance is NULL");
+        }
+
+        // (optional) still notify others if needed
+        OnBossDied?.Invoke();
+
+        // Continue animation
         yield return new WaitForSeconds(sleepAnimationLength);
+
         gameObject.SetActive(false);
-        UnityEngine.Debug.Log("☠️ Boss removed from scene (death complete)");
+
     }
 
     private void UpdateBossGPAAnimation()
@@ -270,7 +281,8 @@ public class BossHealth : MonoBehaviour
         bossIsDead = false;
 
         // Trigger health update for UI
-        OnHealthChanged?.Invoke();
+        if (IsFightActive)
+            OnHealthChanged?.Invoke(_currentHealth, maxHealth);
 
         UpdateBossGPAAnimation();
         UnityEngine.Debug.Log($"🔄 Boss health reset to max: {maxHealth}");
@@ -282,5 +294,17 @@ public class BossHealth : MonoBehaviour
     {
         TakeDamage();
     }
+
+
+    public void ActivateBossFight()
+    {
+        IsFightActive = true;
+
+        // Send initial UI sync (max -> current)
+        OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+
+        UnityEngine.Debug.Log("👑 Boss fight activated");
+    }
+
 
 }
