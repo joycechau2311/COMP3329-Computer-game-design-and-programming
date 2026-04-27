@@ -19,7 +19,7 @@ public class EnemyChaser : MonoBehaviour
     private bool canSeePlayer = false;
 
     [Header("Obstacle Jumping")]
-    public float boxCheckDistance = 1.0f;  // how far ahead to detect box
+    public float boxCheckDistance = 3f;  // how far ahead to detect box
     public LayerMask boxLayer;             // layer of your boxes
     public float jumpForce = 7f;           // how high the enemy jumps
     private bool isGrounded = true;        // simple ground check
@@ -145,14 +145,23 @@ public class EnemyChaser : MonoBehaviour
     {
         Vector2 direction = movementDirection.x < 0 ? Vector2.left : Vector2.right;
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, boxCheckDistance, boxLayer);
+        Collider2D col = GetComponent<Collider2D>();
+        if (!col) return false;
 
-        if (hit.collider != null)
-        {
-            return true;
-        }
+        RaycastHit2D hit = Physics2D.BoxCast(
+            col.bounds.center,
+            col.bounds.size * 0.9f,
+            0f,
+            direction,
+            boxCheckDistance,
+            boxLayer
+        );
 
-        return false;
+        UnityEngine.Debug.DrawRay(col.bounds.center,
+            direction * boxCheckDistance,
+            Color.yellow);
+
+        return hit.collider != null;
     }
 
 }

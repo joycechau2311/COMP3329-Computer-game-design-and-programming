@@ -14,6 +14,11 @@ public class EnemyHealth : MonoBehaviour
     [Header("Settings")]
     public float hitDuration = 1f; // How long the hit animation stays active
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip hitSound;
+    public AudioClip deathSound;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -37,6 +42,10 @@ public class EnemyHealth : MonoBehaviour
             Debug.LogWarning($"EnemyHealth on '{name}' could not find an Animator component.");
         else
             Debug.Log($"EnemyHealth on '{name}' found Animator '{anim.gameObject.name}'");
+
+        // Grab the AudioSource if it wasn't manually assigned in the inspector
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
     }
 
     public void TakeDamage(int damage)
@@ -52,6 +61,12 @@ public class EnemyHealth : MonoBehaviour
         }
         else
         {
+            // --- NEW: Play hit sound ---
+            if (audioSource != null && hitSound != null)
+            {
+                audioSource.PlayOneShot(hitSound);
+            }
+
             StartCoroutine(PlayHitAnimation());
         }
     }
@@ -124,6 +139,12 @@ public class EnemyHealth : MonoBehaviour
     {
         Debug.Log(name + " destroyed!");
         isDead = true;
+
+        // --- NEW: Play death sound ---
+        if (audioSource != null && deathSound != null)
+        {
+            audioSource.PlayOneShot(deathSound);
+        }
 
         if (anim != null)
         {

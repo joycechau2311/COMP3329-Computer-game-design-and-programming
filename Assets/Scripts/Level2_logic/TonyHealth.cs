@@ -1,10 +1,17 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TonyHealth : MonoBehaviour
 {
     [Header("Health")]
     public float maxHealth = 100f;
     public float currentHealth;
+
+    [Header("Heart UI")]
+    public int maxHearts = 5;
+    public Image[] heartImages;
+    public Sprite fullHeart;
+    public Sprite emptyHeart;
 
     [Header("Animator")]
     public Animator tonyAnimator;
@@ -18,6 +25,7 @@ public class TonyHealth : MonoBehaviour
         if (tonyAnimator == null)
             tonyAnimator = GetComponent<Animator>();
 
+        UpdateHearts();
         // Idle will play automatically because it's the Entry state
     }
 
@@ -29,8 +37,9 @@ public class TonyHealth : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
         PlayHitAnimation();
+        UpdateHearts();
 
-        if (currentHealth <= 0f)
+        if (currentHealth <= 0)
             Die();
     }
 
@@ -54,4 +63,15 @@ public class TonyHealth : MonoBehaviour
     }
 
     public float GetHealthPercentage() => currentHealth / maxHealth;
+
+    void UpdateHearts()
+    {
+        float healthPerHeart = maxHealth / maxHearts;
+        int heartsRemaining = Mathf.CeilToInt(currentHealth / healthPerHeart);
+
+        for (int i = 0; i < heartImages.Length; i++)
+        {
+            heartImages[i].sprite = (i < heartsRemaining) ? fullHeart : emptyHeart;
+        }
+    }
 }

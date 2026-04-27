@@ -10,11 +10,11 @@ public class UIManager : MonoBehaviour
     public Slider healthSlider;
     public TextMeshProUGUI levelText;
     public Image healthFill;
+    public Slider potionSlider;
 
     [Header("Student Stats")]
     public TextMeshProUGUI studentSavedText; // Drag your TextMeshPro counter here
-
-
+    
     private bool isPaused = false;
 
     private void Start()
@@ -48,8 +48,6 @@ public class UIManager : MonoBehaviour
 
     }
 
-    // ==================== REST OF YOUR UI LOGIC ====================
-
     public void OnGamePausePressed()
     {
         pauseUI.SetActive(true);
@@ -78,6 +76,8 @@ public class UIManager : MonoBehaviour
         pauseUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
+        GameManager.Instance.savedStudents = 0;
+
     }
 
     public void ShowGameOver()
@@ -106,10 +106,16 @@ public class UIManager : MonoBehaviour
 
     public void UpdateLevel()
     {
-        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex - 1;
         if (levelText != null)
         {
             levelText.text = "Level " + currentLevelIndex;
         }
+    }
+
+    public void UpdatePotionBar(float current, float max) // For level 2
+    {
+        potionSlider.maxValue = max;
+        potionSlider.value = current;
     }
 }

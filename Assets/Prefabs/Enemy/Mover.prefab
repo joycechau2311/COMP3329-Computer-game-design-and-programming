@@ -33,8 +33,8 @@ Transform:
   m_GameObject: {fileID: 913834485805168117}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.4143, y: -3.1124, z: 0}
-  m_LocalScale: {x: 1.4623401, y: 1.5807835, z: 1}
+  m_LocalPosition: {x: 7.7822, y: -3.3986, z: 0}
+  m_LocalScale: {x: 1.0883113, y: 1.2911619, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -80,8 +80,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 629380345
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: b251cfb79277a48078a3802942dc293a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -178,7 +178,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeLayer: 0
-  m_Offset: {x: 0.17848223, y: -0.027598977}
+  m_Offset: {x: 0.114586085, y: 0.00195539}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -188,7 +188,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.4567677, y: 1.6692705}
+  m_Size: {x: 1.5845599, y: 1.7283792}
   m_EdgeRadius: 0
 --- !u!114 &7851798108021213616
 MonoBehaviour:
@@ -202,9 +202,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7f8998c6f7b24338871dce5861ef7c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  player: {fileID: 0}
+  rb: {fileID: 2496981662175595378}
+  spriteRenderer: {fileID: 5326977489387776408}
+  player: {fileID: 342962670827686344, guid: 311263ade2b8640c1882c605b032f725, type: 3}
   speed: 3
   startDirection: 1
   spriteFacesRight: 1
@@ -212,10 +212,10 @@ MonoBehaviour:
   minReboundInterval: 0.12
   reboundMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 32768
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 32768
   reboundLockSeconds: 0.8
 --- !u!114 &5471329519032722851
 MonoBehaviour:
@@ -247,5 +247,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4d83c6b101b94ae4b0014ae19359e1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 1
+  attackDamage: 0.5
   attackCooldown: 1.2

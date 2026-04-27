@@ -1,33 +1,50 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement; // Needed to load the game scene
+using UnityEngine.SceneManagement; 
 
 public class MainMenuManager : MonoBehaviour
 {
     [Header("Settings")]
-    // TYPE THE EXACT NAME OF YOUR GAME SCENE HERE:
     public string gameSceneName = "GameScene";
+    
+    [Tooltip("How long to wait before loading the scene, allowing the click sound to play.")]
+    public float loadDelay = 0.3f; // 0.3 seconds is usually perfect for a UI click
 
     // --- FUNCTION FOR THE START BUTTON ---
     public void StartGame()
     {
-        // This tells Tuanjie to load your gameplay scene
-        SceneManager.LoadScene("Level_1");
+        // Start the Coroutine instead of loading instantly
+        StartCoroutine(LoadSceneWithDelay("Level_1"));
     }
 
     public void ShowCredits()
     {
-        SceneManager.LoadScene("CreditsScene");
+        StartCoroutine(LoadSceneWithDelay("CreditsScene"));
     }
 
     // --- FUNCTION FOR THE EXIT BUTTON ---
     public void ExitGame()
     {
-        // This line tells the actual built application (.exe, app) to close.
-        Application.Quit();
+        StartCoroutine(ExitWithDelay());
+    }
 
-        // This line is ONLY for testing in the editor.
-        // Since Application.Quit() doesn't close the Tuanjie Editor window, 
-        // we use this to prove that the button works when you click it!
+    // --- COROUTINES (The Delay Logic) ---
+    
+    private IEnumerator LoadSceneWithDelay(string sceneName)
+    {
+        // 1. Wait for the delay time
+        yield return new WaitForSeconds(loadDelay);
+        
+        // 2. Load the scene after the wait is over
+        SceneManager.LoadScene(sceneName);
+    }
+
+    private IEnumerator ExitWithDelay()
+    {
+        // Wait for the sound to play before quitting
+        yield return new WaitForSeconds(loadDelay);
+        
+        Application.Quit();
         Debug.Log("The 'Exit' button was clicked. The game would close now if it was a built application!");
     }
 }
