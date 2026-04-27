@@ -8,6 +8,17 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb;
     public Animator anim;
 
+    [Header("Audio Sources")]
+    public AudioSource sfxSource;       // For jumps, dash, shoot
+    public AudioSource movementSource;  // ONLY for the long running track
+
+    [Header("Audio Clips")]
+    public AudioClip runSound;
+    public AudioClip jumpSound;
+    public AudioClip doubleJumpSound;
+    public AudioClip dashSound;
+    public AudioClip shootSound;
+
     [Header("Level Start")]
     public string level4SceneName = "Level_4";
     public float level4StartX = -6f;
@@ -25,7 +36,7 @@ public class PlayerController : MonoBehaviour
     public float doubleJumpForce = 12f;
 
     bool isOnGround;
-    bool canDoubleJump;           // ← This controls whether double jump is available
+    bool canDoubleJump;
     bool isDoubleJumping;
 
     [Header("Dash")]
@@ -50,7 +61,13 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
 
-        // Level 4 position setup
+        // Automatically configure the movement source to loop the run sound
+        if (movementSource != null && runSound != null)
+        {
+            movementSource.clip = runSound;
+            movementSource.loop = true;
+        }
+
         string currentScene = SceneManager.GetActiveScene().name;
         if (currentScene.Contains("Level4") || currentScene.Contains("Level 4") || currentScene.Contains("Level_4"))
         {
@@ -70,42 +87,74 @@ public class PlayerController : MonoBehaviour
         // Ground Check
         isOnGround = Physics2D.OverlapCircle(groundCheck.position, radius, groundMask);
 
-        // Reset double jump when landing
         if (isOnGround)
         {
             canDoubleJump = true;
             isDoubleJumping = false;
         }
 
-        // Jump & Double Jump Logic
+        // --- CONTINUOUS RUNNING AUDIO LOGIC ---
+        if (isRunning && isOnGround && !isDashing)
+        {
+            // If the sound isn't already playing, start it
+            if (movementSource != null && !movementSource.isPlaying)
+            {
+                movementSource.Play();
+            }
+        }
+        else
+        {
+            // If we stop moving or jump, pause the sound
+            // Pause() is better than Stop() so the footstep track doesn't 
+            // always restart from 0.0 seconds, which sounds repetitive.
+            if (movementSource != null && movementSource.isPlaying)
+            {
+                movementSource.Pause(); 
+            }
+        }
+
+        // --- JUMP LOGIC ---
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (isOnGround)
             {
                 Jump(jumpForce);
-                canDoubleJump = true;        // Allow double jump after ground jump
+                if (sfxSource != null && jumpSound != null) 
+                {
+                    sfxSource.PlayOneShot(jumpSound);
+                }
+                canDoubleJump = true;
             }
             else if (canDoubleJump)
             {
                 Jump(doubleJumpForce);
-                canDoubleJump = false;       // Disable double jump after using it
+                if (sfxSource != null && doubleJumpSound != null) 
+                {
+                    sfxSource.PlayOneShot(doubleJumpSound);
+                }
+                canDoubleJump = false;
                 isDoubleJumping = true;
             }
         }
 
-        // Dash
+        // --- DASH LOGIC ---
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
         {
             dashDirection = inputMovement != 0 ? Mathf.Sign(inputMovement) : (right ? 1f : -1f);
             if (dashDirection == 0) dashDirection = right ? 1f : -1f;
+            
+            if (sfxSource != null && dashSound != null) 
+            {
+                sfxSource.PlayOneShot(dashSound);
+            }
             StartCoroutine(PerformDash());
         }
 
-        // Shooting
+        // --- SHOOTING LOGIC ---
         if (Input.GetMouseButtonDown(0))
         {
             anim.SetTrigger("Shoot");
-            StartCoroutine(FireBulletAfterDelay(0.5f)); // adjust delay
+            StartCoroutine(FireBulletAfterDelay(0.5f));
         }
 
         // Animator
@@ -163,13 +212,17 @@ public class PlayerController : MonoBehaviour
         GetComponentInChildren<SpriteRenderer>().flipX = !right;
     }
 
-    // ... (keep your FireBullet and OnCollisionEnter2D as they are)
     public void FireBullet()
     {
         if (Time.time - lastFireTime < fireCooldown)
             return;
 
         lastFireTime = Time.time;
+
+        if (sfxSource != null && shootSound != null) 
+        {
+            sfxSource.PlayOneShot(shootSound);
+        }
 
         float offsetX = right ? 1.5f : -1.5f;
         Vector3 spawnPos = transform.position + new Vector3(offsetX, 0f, 0f);
@@ -191,7 +244,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         FireBullet();
     }
-
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

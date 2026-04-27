@@ -11,6 +11,7 @@ TagManager:
   - Boss
   - Bullet
   - Transition
+  - Bubble
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - UI
   - Gate
   - Enemy
-  - 
+  - PlayerWall
   - Player
   - 
   - 
@@ -53,6 +54,12 @@ TagManager:
     locked: 0
   - name: Gate
     uniqueID: 3774194031
+    locked: 0
+  - name: Obstacles
+    uniqueID: 80067807
+    locked: 0
+  - name: Enemy
+    uniqueID: 629380345
     locked: 0
   - name: Player
     uniqueID: 1648888201

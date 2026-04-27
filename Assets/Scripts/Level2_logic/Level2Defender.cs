@@ -3,24 +3,29 @@ using UnityEngine;
 
 public class Level2Defender : MonoBehaviour
 {
+    private UIManager ui;
+
     [Header("Core References")]
     public GameObject tony;
     public TonyHealth tonyHealth;
-    public GameObject teleportGate;           // ← Your hidden gate
+    public GameObject teleportGate;          
 
     [Header("Wave Settings")]
     public float totalWaveTime = 120f;
     public int requiredPotionProgress = 100;
 
+    public float GetPotionProgress() => potionProgress;
+    public float GetMaxPotion() => requiredPotionProgress;
+
     WaveSettings GetCurrentWave(float currentTime)
     {
-        if (currentTime < 40f)       // First 40 seconds
-            return new WaveSettings(2.5f, 1.0f);   // Slow spawn (every 2.5s), normal speed
+        if (currentTime < 20f)       
+            return new WaveSettings(5f, 1.0f);  
 
-        if (currentTime < 80f)       // From 40s to 80s
-            return new WaveSettings(1.6f, 1.4f);   // Faster spawn, a bit faster enemies
+        if (currentTime < 50f)    
+            return new WaveSettings(3f, 1.4f);   // Faster spawn, a bit faster enemies
 
-        return new WaveSettings(1.1f, 1.8f);       // After 80s → very fast and aggressive
+        return new WaveSettings(2f, 1.8f);  
     }
 
     [Header("Enemy Prefabs")]
@@ -47,6 +52,13 @@ public class Level2Defender : MonoBehaviour
             tonyHealth = tony.GetComponent<TonyHealth>();
 
         StartLevel();
+        ui = FindObjectOfType<UIManager>();
+    }
+
+    private void Update()
+    {
+        if (ui != null)
+            ui.UpdatePotionBar(potionProgress, requiredPotionProgress);
     }
 
     public void StartLevel()
@@ -135,13 +147,31 @@ public class Level2Defender : MonoBehaviour
 
     void SpawnEnemy(WaveSettings wave)
     {
-        if (spawnPoints.Length == 0) return;
+        Camera cam = Camera.main;
+        float y = Random.Range(-2f, 2f); // adjust to your ground height
 
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-        GameObject prefab = (Random.value > 0.5f) ? chaserPrefab : moverPrefab;
+        float x;
+        if (Random.value < 0.5f)
+            x = cam.transform.position.x - cam.orthographicSize * cam.aspect - 1f; // left
+        else
+            x = cam.transform.position.x + cam.orthographicSize * cam.aspect + 1f; // right
 
-        if (prefab != null)
-            Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+        Vector3 spawnPos = new Vector3(x, y, 0f);
+
+        GameObject prefab = ChooseEnemyPrefab();
+        Instantiate(prefab, spawnPos, Quaternion.identity);
+    }
+
+    GameObject ChooseEnemyPrefab()
+    {
+        float roll = Random.value;
+
+        if (roll < 0.4f)
+            return moverPrefab;
+        else if (roll < 0.8f)
+            return chaserPrefab;
+        else
+            return flyerPrefabs;
     }
 
     struct WaveSettings
@@ -154,6 +184,16 @@ public class Level2Defender : MonoBehaviour
             spawnInterval = interval;
             enemySpeed = speed;
         }
+    }
+
+    Vector2 GetCameraBounds()
+    {
+        Camera cam = Camera.main;
+        float height = 2f * cam.orthographicSize;
+        float width = height * cam.aspect;
+
+        Vector3 camPos = cam.transform.position;
+        return new Vector2(width / 2f, height / 2f);
     }
 
     // For testing
