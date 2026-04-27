@@ -454,8 +454,10 @@ MonoBehaviour:
   gotHit: 0
   hitDuration: 0.2
   audioSource: {fileID: 3258001398398869750}
-  hitSound: {fileID: 8300000, guid: 2b350234cc9f5db47b7521ed551a6ae3, type: 3}
-  deathSound: {fileID: 8300000, guid: 61fedd1c1fef7a24cb12b823b1d705af, type: 3}
+  hitSound: {fileID: 8300000, guid: 33602c7a6842147789c9d5da5abdaa5d, type: 3}
+  deathSound: {fileID: 8300000, guid: 939448271b98248f5aeffecd8d5bc50c, type: 3}
+  delayBeforeGameOver: 1.5
+  gameOverSceneName: GameOver
 --- !u!1 &8400589894601909068
 GameObject:
   m_ObjectHideFlags: 0
