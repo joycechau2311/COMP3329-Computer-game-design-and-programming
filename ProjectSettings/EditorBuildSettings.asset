@@ -32,6 +32,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Levels/CreditsScene.scene
     guid: 9ab65e3cdf30a2344a3004831b64e335
+  - enabled: 1
+    path: Assets/Levels/GameOver.scene
+    guid: 37895c59ea35441bd9a3d0f3d7f77239
   m_BuildProfiles: []
   m_configObjects: {}
   m_SlimFeaturesWeixinMiniGame:

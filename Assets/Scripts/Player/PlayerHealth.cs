@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement; // Required for changing scenes
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class PlayerHealth : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip hitSound;
     public AudioClip deathSound;
+
+    [Header("Game Over Settings")]
+    public float delayBeforeGameOver = 1.5f; // The delay parameter you requested
+    public string gameOverSceneName = "GameOver"; // Make sure this matches your scene name exactly
 
     private UIManager uiManager;
 
@@ -48,17 +53,22 @@ public class PlayerHealth : MonoBehaviour
 
     IEnumerator DieSequence()
     {
-        Debug.Log("Player died!");
+        Debug.Log("Player died! GPA crashed!");
         isDead = true;
 
-        // Play death sound
         if (deathSound != null) audioSource.PlayOneShot(deathSound);
 
         GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(delayBeforeGameOver);
 
-        Destroy(gameObject);
+        // --- NEW CODE: Save the current level name before we leave ---
+        string currentScene = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetString("LastPlayedLevel", currentScene);
+        PlayerPrefs.Save(); 
+        // --------------------------------------------------------------
+
+        SceneManager.LoadScene(gameOverSceneName);
     }
 }
