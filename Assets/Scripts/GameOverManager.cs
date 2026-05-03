@@ -5,7 +5,7 @@ using System.Collections;
 public class GameOverManager : MonoBehaviour
 {
     [Header("Scene Routing")]
-    public string fallbackSceneName = "Level1"; // Changed this variable name to make sense
+    public string fallbackSceneName = "Level1";
     public string mainMenuSceneName = "MainMenu"; 
 
     [Header("Audio Settings")]
@@ -24,9 +24,10 @@ public class GameOverManager : MonoBehaviour
 
     public void RetryLevel()
     {
-        // Ask PlayerPrefs for the last level. If it doesn't exist, use the fallback.
         string sceneToLoad = PlayerPrefs.GetString("LastPlayedLevel", fallbackSceneName);
-        
+
+        StudentSaveManager.ClearLevelSaveCount(sceneToLoad);
+
         StartCoroutine(PlaySoundAndLoadScene(sceneToLoad));
     }
 

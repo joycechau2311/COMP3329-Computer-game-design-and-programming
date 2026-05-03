@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class WaveSpawner : MonoBehaviour
 {
     [Header("Enemy Prefabs")]
-    public GameObject moverPrefab;
     public GameObject chaserPrefab;
     public GameObject flyingPrefab;
 
@@ -15,52 +14,41 @@ public class WaveSpawner : MonoBehaviour
     public Transform leftSpawnPoint;
     public Transform rightSpawnPoint;
 
-    [Header("Player-Relative Spawn Settings")] // Core settings for your requirement
-    public float initialFixedSpawnX = -5f; // Base X (left of table in Phase 1)
-    public float spawnXOffsetFromPlayer = 8f; // Add this to player's X (forward movement)
-    public float minSpawnY = 1f; // Min random Y
-    public float maxSpawnY = 4f; // Max random Y
-    public float spawnXRandomTweak = 0.5f; // Small X variation (optional)
+    [Header("Player-Relative Spawn Settings")]
+    public float initialFixedSpawnX = -5f;
+    public float spawnXOffsetFromPlayer = 8f;
+    public float minSpawnY = 1f;
+    public float maxSpawnY = 4f;
+    public float spawnXRandomTweak = 0.5f;
 
     [Header("Debug")]
     public bool logSpawnDebug = true;
 
     [Header("Settings")]
-    public float flyingThresholdY = 5f;
+    public float flyingThresholdY = 2f;
     public int requiredKills = 30;
     public string bossSceneName = "Level_4";
 
     private float waveTimer = 0f;
     private float nextSpawnTime = 0f;
     private float currentSpawnRate = 2.0f;
-    private GameObject player; // Cache player reference
+    private GameObject player;
     private Camera cachedCam;
+    public float flyerSpeedMultiplier = 0.5f;
 
     void Start()
     {
-        // Find and cache player (update in Update() to ensure it's always valid)
-        player = GameObject.FindGameObjectWithTag("Player"); // Ensure player has "Player" tag
+        player = GameObject.FindGameObjectWithTag("Player");
         cachedCam = GetActiveCamera();
 
         if (IsSpawnedClone())
         {
             if (logSpawnDebug)
-                UnityEngine.Debug.Log($"[SPAWN] WaveSpawner is running on spawned clone '{gameObject.name}'; disabling this instance.");
+
             enabled = false;
             return;
         }
 
-        if (logSpawnDebug)
-        {
-            UnityEngine.Debug.Log($"[SPAWN] WaveSpawner started in scene '{SceneManager.GetActiveScene().name}'");
-            UnityEngine.Debug.Log($"[SPAWN] Initial spawn X: {initialFixedSpawnX}, Player offset: {spawnXOffsetFromPlayer}");
-        }
-
-        // Validate required references
-        if (moverPrefab == null || chaserPrefab == null)
-        {
-            UnityEngine.Debug.LogWarning("[SPAWN] Missing enemy prefabs (mover/chaser) - assign in Inspector!");
-        }
     }
 
     bool IsSpawnedClone()
@@ -70,7 +58,6 @@ public class WaveSpawner : MonoBehaviour
 
     void Update()
     {
-        // Keep player reference updated (in case player is reloaded)
         if (player == null)
             player = GameObject.FindGameObjectWithTag("Player");
         if (cachedCam == null || !cachedCam.isActiveAndEnabled)
@@ -89,15 +76,9 @@ public class WaveSpawner : MonoBehaviour
         }
     }
 
-    // Handle spawning logic for Level 4 (Boss Scene)
     void HandleBossSceneSpawning()
     {
-        if (BossHealth.bossIsDead)
-        {
-            if (logSpawnDebug)
-                UnityEngine.Debug.Log("[SPAWN] Boss is dead - stopping spawns");
-            return;
-        }
+        if (BossHealth.bossIsDead) return;
 
         int currentKills = RabbitKillCounter.Instance != null ? RabbitKillCounter.Instance.GetCurrentKills() : 0;
         float bossHealthValue = 4.3f;
@@ -115,30 +96,17 @@ public class WaveSpawner : MonoBehaviour
 
         int activeEnemies = CountLivingEnemies();
 
-        if (logSpawnDebug)
-            UnityEngine.Debug.Log($"[SPAWN] Boss Phase | Kills: {currentKills} | Boss HP: {bossHealthValue} | Active Enemies: {activeEnemies}/{phase.maxEnemiesInView}");
-
-        // HARD LIMIT - Prevent too many enemies at once
-        if (activeEnemies >= 12)   // You can adjust this number
-            return;
-
-        // Spawn only if under max enemies and cooldown is done
         if (activeEnemies < phase.maxEnemiesInView && Time.time >= nextSpawnTime)
         {
             SpawnEnemy(phase);
             nextSpawnTime = Time.time + currentSpawnRate;
-
-            if (logSpawnDebug)
-                Debug.Log($"[SPAWN] Enemy spawned | Total active now: {activeEnemies + 1}");
         }
     }
 
-    // Handle spawning for non-boss scenes (Level 1-3)
     void HandleNormalSceneSpawning()
     {
         waveTimer += Time.deltaTime;
 
-        // Adjust spawn rate over time (original logic)
         if (waveTimer <= 15f) currentSpawnRate = 2.5f;
         else if (waveTimer <= 45f) currentSpawnRate = 1.5f;
         else if (waveTimer <= 105f) currentSpawnRate = 0.8f;
@@ -155,7 +123,6 @@ public class WaveSpawner : MonoBehaviour
     {
         if (BossHealth.bossIsDead) return;
 
-        // For non-boss scenes: spawn from left/right if provided, otherwise fall back to camera edges.
         bool canLeft = leftSpawnPoint != null;
         bool canRight = rightSpawnPoint != null;
         bool spawnLeft = canLeft && canRight ? (UnityEngine.Random.value < 0.5f) : canLeft;
@@ -166,18 +133,14 @@ public class WaveSpawner : MonoBehaviour
         {
             float dx = player.transform.position.x - spawnPos.x;
             if (Mathf.Abs(dx) > 0.01f)
-                sideDirection = dx > 0 ? 1 : -1; // move toward player
+                sideDirection = dx > 0 ? 1 : -1;
         }
 
-        if (logSpawnDebug)
-            UnityEngine.Debug.Log($"[SPAWN] Normal Scene | Spawn Pos: {spawnPos}");
+        GameObject prefabToSpawn = ChooseEnemyPrefab(); // Uses updated selection
+        if (prefabToSpawn == null) return;
 
-        GameObject prefabToSpawn = ChooseGroundPrefab();
-        if (prefabToSpawn == null)
-        {
-            UnityEngine.Debug.LogWarning("[SPAWN] No valid ground prefab to spawn!");
-            return;
-        }
+        // If it's a flyer, adjust height to flying threshold
+        if (prefabToSpawn == flyingPrefab) spawnPos.y = flyingThresholdY;
 
         GameObject newEnemy = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
         SetEnemyMovementDirection(newEnemy, sideDirection);
@@ -187,22 +150,12 @@ public class WaveSpawner : MonoBehaviour
     {
         if (BossHealth.bossIsDead) return;
 
-        // For boss scene: spawn on right side (default = camera right boundary if no spawn point assigned)
         Vector3 spawnPos = GetPlayerRelativeSpawnPosition();
-        int sideDirection = -1; // Force movement LEFT (toward player)
+        GameObject prefabToSpawn = ChooseEnemyPrefab();
+        if (prefabToSpawn == null) return;
 
-        if (logSpawnDebug)
-            UnityEngine.Debug.Log($"[SPAWN] Boss Scene | Spawn Pos: {spawnPos} | Movement: LEFT");
+        if (prefabToSpawn == flyingPrefab) spawnPos.y = flyingThresholdY;
 
-        // Choose prefab (prioritize chaser for boss scene)
-        GameObject prefabToSpawn = chaserPrefab != null ? chaserPrefab : moverPrefab;
-        if (prefabToSpawn == null)
-        {
-            UnityEngine.Debug.LogWarning("[SPAWN] No valid enemy prefab for boss scene!");
-            return;
-        }
-
-        // Spawn enemy and set movement/speed
         GameObject newEnemy = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
 
         EnemyHealth enemyHealth = newEnemy.GetComponentInChildren<EnemyHealth>();
@@ -212,27 +165,24 @@ public class WaveSpawner : MonoBehaviour
             enemyHealth.currentHealth = 1;
         }
 
-        SetEnemyMovementDirection(newEnemy, sideDirection);
-        SetEnemySpeed(newEnemy, phase.enemySpeed);
+        float speedToSet = phase.enemySpeed;
+        if (prefabToSpawn == flyingPrefab) speedToSet *= flyerSpeedMultiplier;
+
+        SetEnemyMovementDirection(newEnemy, -1);
+        SetEnemySpeed(newEnemy, speedToSet);
     }
 
-    // CORE LOGIC: Calculate spawn position (follows player movement)
     Vector3 GetPlayerRelativeSpawnPosition()
     {
-        // If a right spawn point is assigned, use it.
         if (rightSpawnPoint != null)
         {
             Vector3 p = rightSpawnPoint.position;
             p.y = UnityEngine.Random.Range(minSpawnY, maxSpawnY);
-            p.z = 0f;
             return p;
         }
-
-        // Default: camera right boundary if not assigned in inspector.
         return GetCameraBoundarySpawnPosition(spawnLeft: false);
     }
 
-    // Original spawn position logic (for non-boss scenes)
     Vector3 GetSpawnPosition(bool spawnLeft)
     {
         Transform spawnPoint = spawnLeft ? leftSpawnPoint : rightSpawnPoint;
@@ -240,126 +190,86 @@ public class WaveSpawner : MonoBehaviour
         {
             Vector3 p = spawnPoint.position;
             p.y = UnityEngine.Random.Range(minSpawnY, maxSpawnY);
-            p.z = 0f;
             return p;
         }
-
-        // Default: camera boundary if nothing is assigned in the header.
         return GetCameraBoundarySpawnPosition(spawnLeft);
     }
 
     Vector3 GetCameraBoundarySpawnPosition(bool spawnLeft)
     {
         Camera cam = cachedCam != null ? cachedCam : GetActiveCamera();
-        if (cam == null)
-        {
-            // Final fallback if no camera is found
-            return new Vector3(spawnLeft ? -8f : 8f, UnityEngine.Random.Range(minSpawnY, maxSpawnY), 0f);
-        }
+        if (cam == null) return new Vector3(spawnLeft ? -8f : 8f, UnityEngine.Random.Range(minSpawnY, maxSpawnY), 0f);
 
         float randomSpawnY = UnityEngine.Random.Range(minSpawnY, maxSpawnY);
         Vector3 viewport = new Vector3(spawnLeft ? 0f : 1f, 0.5f, Mathf.Abs(cam.transform.position.z));
         Vector3 worldEdge = cam.ViewportToWorldPoint(viewport);
 
-        // Small outward margin so enemies don't pop in clipped by the edge
         float margin = 0.5f;
         float x = worldEdge.x + (spawnLeft ? -margin : margin);
         return new Vector3(x, randomSpawnY, 0f);
     }
 
-    // Helper: Set enemy movement direction (force left for boss scene)
     void SetEnemyMovementDirection(GameObject enemy, int direction)
     {
         if (enemy.TryGetComponent<EnemyMover>(out EnemyMover mover))
-        {
             mover.SetInitialDirection(direction);
-        }
     }
 
-    // Helper: Set enemy speed (for boss scene phases)
     void SetEnemySpeed(GameObject enemy, float speed)
     {
         if (enemy.TryGetComponent<EnemyMover>(out EnemyMover mover))
-        {
             mover.SetSpeed(speed);
-        }
 
         if (enemy.TryGetComponent<EnemyChaser>(out EnemyChaser chaser))
-        {
             chaser.SetSpeed(speed);
-        }
     }
 
-    // IMPROVED CountLivingEnemies - This was the main culprit
     int CountLivingEnemies()
     {
         EnemyHealth[] allEnemies = FindObjectsOfType<EnemyHealth>(true);
-
         int count = 0;
         foreach (EnemyHealth enemy in allEnemies)
         {
-            if (enemy == null) continue;
-            if (!enemy.gameObject.activeInHierarchy) continue;
-            if (enemy.isDead) continue;
-
-            // Only count real spawned enemies (clones), not prefabs
-            if (enemy.gameObject.name.Contains("(Clone)"))
-            {
-                count++;
-            }
+            if (enemy == null || !enemy.gameObject.activeInHierarchy || enemy.isDead) continue;
+            if (enemy.gameObject.name.Contains("(Clone)")) count++;
         }
         return count;
     }
 
-    // Helper: Check if enemy is a template (not a spawned clone)
     bool IsTemplateEnemy(EnemyHealth enemy)
     {
         if (enemy == null) return false;
-
         string name = enemy.gameObject.name;
         if (name.Contains("(Clone)")) return false;
-
-        if (moverPrefab != null && name == moverPrefab.name) return true;
+        // Removed moverPrefab check[cite: 2]
         if (chaserPrefab != null && name == chaserPrefab.name) return true;
         if (flyingPrefab != null && name == flyingPrefab.name) return true;
-
         return false;
     }
 
-    // Helper: Get active camera (original logic)
     Camera GetActiveCamera()
     {
         if (Camera.main != null) return Camera.main;
-
         GameObject mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
         if (mainCamera != null) return mainCamera.GetComponent<Camera>();
-
-        foreach (Camera cam in Camera.allCameras)
-        {
-            if (cam.isActiveAndEnabled) return cam;
-        }
-
         return null;
     }
 
-    // Helper: Choose ground prefab (original logic)
-    GameObject ChooseGroundPrefab()
+    GameObject ChooseEnemyPrefab()
     {
-        if (moverPrefab != null && chaserPrefab != null)
-            return UnityEngine.Random.value > 0.5f ? moverPrefab : chaserPrefab;
+        if (chaserPrefab == null) return flyingPrefab;
+        if (flyingPrefab == null) return chaserPrefab;
 
-        return chaserPrefab ?? moverPrefab;
+        return UnityEngine.Random.value < 0.7f ? chaserPrefab : flyingPrefab;
     }
 
-    // Helper: Get current boss phase (original logic)
     PhaseSettings GetCurrentPhase(int currentKills, float bossHealth)
     {
-        if (currentKills < requiredKills) return new PhaseSettings(1, 5, 5f, 5.0f);
-        if (bossHealth > 1) return new PhaseSettings(1, 10, 6f, 5.0f);
-        return new PhaseSettings(1, 15, 7f, 5.0f);
+        if (currentKills < requiredKills) return new PhaseSettings(1, 5, 5f, 2f);
+        if (bossHealth > 1) return new PhaseSettings(1, 10, 6f, 2f);
+        return new PhaseSettings(1, 15, 7f, 2f);
     }
 
-    // Phase settings struct (original logic)
     struct PhaseSettings
     {
         public int minEnemiesInView;
@@ -375,10 +285,4 @@ public class WaveSpawner : MonoBehaviour
             spawnRate = rate;
         }
     }
-
-    //public void StopSpawning()
-    //{
-    //    if (bossHealth._isDead != null)
-    //        StopCoroutine(spawnCoroutine);
-    //}spawnCoroutine
 }

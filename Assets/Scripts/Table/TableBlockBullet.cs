@@ -32,11 +32,9 @@ public class TableBlockBullet : MonoBehaviour
         if (col != null)
         {
             col.isTrigger = true;
-            Debug.Log("[TABLE] Table collider set to Trigger so enemies can pass through.");
+
         }
-        Debug.Log($"[TABLE] Start() - Collider found: {col != null}, Is Trigger: {(col != null ? col.isTrigger : false)}");
-        Debug.Log($"[TABLE] Rigidbody found: {tableRb != null}, Body Type: {(tableRb != null ? tableRb.bodyType.ToString() : "N/A")}");
-        Debug.Log($"[TABLE] Animator found: {tableAnimator != null}");
+
     }
 
     void Update()
@@ -69,10 +67,10 @@ public class TableBlockBullet : MonoBehaviour
 
     void PlayDisappearAnimation()
     {
-        Debug.Log("✨ 30 shots reached! Table disappearing...");
+
         if (tableAnimator != null)
         {
-            tableAnimator.SetTrigger("Disappear"); // Make sure this animation exists
+            tableAnimator.SetTrigger("Disappear"); 
         }
 
         // Disable blocking after animation plays
@@ -81,7 +79,7 @@ public class TableBlockBullet : MonoBehaviour
 
     IEnumerator DisableTableAfterAnimation()
     {
-        yield return new WaitForSeconds(1f); // Adjust based on your animation length
+        yield return new WaitForSeconds(1f);
         gameObject.SetActive(false); // Hide the table
     }
 
@@ -99,8 +97,8 @@ public class TableBlockBullet : MonoBehaviour
             // Check if bullet is approaching table (moving towards boss)
             if (bossTransform != null)
             {
-                if (bossIsRight && bullet.shootDirection <= 0) continue;  // Bullet moving left, but boss is right
-                if (!bossIsRight && bullet.shootDirection >= 0) continue; // Bullet moving right, but boss is left
+                if (bossIsRight && bullet.shootDirection <= 0) continue;
+                if (!bossIsRight && bullet.shootDirection >= 0) continue;
             }
 
             float dist = Vector2.Distance(bullet.transform.position, transform.position);
@@ -147,35 +145,30 @@ public class TableBlockBullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"[TABLE] OnTriggerEnter2D called! Object: {other.gameObject.name}, Tag: {other.tag}, IsBlocking: {_isBlocking}");
+
 
         if (_isBlocking)
         {
-            Debug.Log($"[TABLE] Already blocking, ignoring collision");
+
             return;
         }
 
-        Debug.Log($"[TABLE] Checking if collision is a bullet...");
 
         bool isBullet = other.CompareTag(bulletTag) || other.GetComponent<bulletScript>() != null;
         if (!isBullet)
         {
-            Debug.Log($"[TABLE] Collision was not a bullet (tag: {bulletTag}, has bulletScript: {other.GetComponent<bulletScript>() != null})");
             return;
         }
 
         _isBlocking = true;
         Destroy(other.gameObject);
-        Debug.Log("✅ [TABLE] Table blocked bullet!");
 
         if (tableAnimator != null)
         {
-            Debug.Log($"[TABLE] SetTrigger('OnBlock') called to transition to Table_Block animation");
             tableAnimator.SetTrigger("OnBlock");
         }
         else
         {
-            Debug.LogWarning("[TABLE] Table Animator is null!");
         }
 
         StartCoroutine(ResetBlocking());

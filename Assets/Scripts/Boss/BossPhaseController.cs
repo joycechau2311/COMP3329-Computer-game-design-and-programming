@@ -6,8 +6,8 @@ public class BossPhaseController : MonoBehaviour
 
     private Animator _anim;
     private int _killedRabbits = 0;
-    public int requiredRabbits = 15; // Update to 30 if needed (match your design)
-    public bool isPhase2Active = false; // New: Track P2 active state
+    public int requiredRabbits = 15;
+    public bool isPhase2Active = false;
 
     void Awake()
     {
@@ -19,7 +19,6 @@ public class BossPhaseController : MonoBehaviour
     {
         if (_anim == null)
         {
-            UnityEngine.Debug.LogError("No Animator component found on Boss!");
             return;
         }
 
@@ -28,10 +27,7 @@ public class BossPhaseController : MonoBehaviour
         {
             _anim.Play(stateHash);
         }
-        else
-        {
-            UnityEngine.Debug.LogError("State 'B_Spawn_P1' not found in Boss Animator!");
-        }
+
     }
 
     public void AddKilledRabbit()
@@ -39,7 +35,6 @@ public class BossPhaseController : MonoBehaviour
         if (isPhase2Active) return; // Lock P2 once activated
 
         _killedRabbits++;
-        UnityEngine.Debug.Log($"Rabbit Kills: {_killedRabbits}/{requiredRabbits}");
 
         if (_killedRabbits >= requiredRabbits)
         {
@@ -56,6 +51,6 @@ public class BossPhaseController : MonoBehaviour
         isPhase2Active = true; // Mark P2 as permanently active
         _anim.SetTrigger("ToShock");
         _anim.Play("B_Spawn_P2"); // Force play P2 state to prevent revert
-        UnityEngine.Debug.Log("BOSS PHASE 2: SHOCK ANIMATION ACTIVATED (PERMANENT)");
+
     }
 }

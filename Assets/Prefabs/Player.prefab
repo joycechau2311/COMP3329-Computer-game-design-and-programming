@@ -451,11 +451,11 @@ MonoBehaviour:
   maxHealth: 5
   currentHealth: 0
   isDead: 0
-  gotHit: 0
   hitDuration: 0.2
   audioSource: {fileID: 3258001398398869750}
   hitSound: {fileID: 8300000, guid: 33602c7a6842147789c9d5da5abdaa5d, type: 3}
   deathSound: {fileID: 8300000, guid: 939448271b98248f5aeffecd8d5bc50c, type: 3}
+  anim: {fileID: 2135138630580708735}
   delayBeforeGameOver: 1.5
   gameOverSceneName: GameOver
 --- !u!1 &8400589894601909068

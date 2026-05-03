@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class LevelEndTrigger : MonoBehaviour
 {
-    [Header("Settings")]
-    //public float delayBeforeTransition = 0.8f;     // Small delay so player feels the gate
 
     [Header("Optional")]
     public bool playSoundOnEnter = true;
@@ -14,7 +12,6 @@ public class LevelEndTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player touched the gate → Starting transition");
 
             GameManager.Instance.LoadNextLevel();
         }

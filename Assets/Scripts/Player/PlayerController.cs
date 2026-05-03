@@ -72,7 +72,6 @@ public class PlayerController : MonoBehaviour
         if (currentScene.Contains("Level4") || currentScene.Contains("Level 4") || currentScene.Contains("Level_4"))
         {
             transform.position = new Vector3(level4StartX, transform.position.y, transform.position.z);
-            Debug.Log($"Player start position set to x={level4StartX} for {currentScene}");
         }
 
         if (playerHealth == null)
@@ -224,8 +223,8 @@ public class PlayerController : MonoBehaviour
             sfxSource.PlayOneShot(shootSound);
         }
 
-        float offsetX = right ? 1.5f : -1.5f;
-        Vector3 spawnPos = transform.position + new Vector3(offsetX, 0f, 0f);
+        float offsetX = right ? 1f : -1f;
+        Vector3 spawnPos = transform.position + new Vector3(offsetX, -1f, 0f);
 
         GameObject newBullet = Instantiate(bullet, spawnPos, Quaternion.identity);
 

@@ -40,8 +40,7 @@ public class RabbitKillCounter : MonoBehaviour
         if (tableObject == null)
         {
             tableObject = GameObject.Find("Table");
-            if (tableObject != null)
-                UnityEngine.Debug.Log("RabbitKillCounter auto-assigned Table object.");
+
         }
 
         if (bossAnimator == null)
@@ -50,8 +49,6 @@ public class RabbitKillCounter : MonoBehaviour
             if (bossObj != null)
                 bossAnimator = bossObj.GetComponent<Animator>();
 
-            if (bossAnimator != null)
-                UnityEngine.Debug.Log("RabbitKillCounter auto-assigned Boss Animator.");
         }
     }
 
@@ -94,7 +91,6 @@ public class RabbitKillCounter : MonoBehaviour
             return;
 
         _currentKills++;
-        UnityEngine.Debug.Log($"Rabbit Kills: {_currentKills}/{requiredKills}");
 
         if (_currentKills >= requiredKills)
         {
@@ -110,7 +106,6 @@ public class RabbitKillCounter : MonoBehaviour
 
         _hasTriggered = true;
         _phase2Triggered = true;
-        UnityEngine.Debug.Log("✅ Required amount of Rabbits Killed! Table exploding, Boss entering Phase 2");
 
         // Set phase2Started on BossHealth
         GameObject boss = GameObject.Find("Boss");

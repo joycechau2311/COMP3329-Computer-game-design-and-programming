@@ -29,7 +29,7 @@ public class TrapAttack : MonoBehaviour
         if (ph != null)
         {
             ph.TakeDamage(attackDamage);
-            Debug.Log($"{gameObject.name} trapped the player! Damage: {attackDamage}");
+
         }
     }
 

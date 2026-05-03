@@ -13,14 +13,21 @@ public class UIManager : MonoBehaviour
     public Slider potionSlider;
 
     [Header("Student Stats")]
-    public TextMeshProUGUI studentSavedText; // Drag your TextMeshPro counter here
+    public TextMeshProUGUI studentSavedText; 
     
     private bool isPaused = false;
+
+    [Header("Boss UI")]
+    public GameObject bossHealthUI;
+    public Slider bossHealthSlider;
 
     private void Start()
     {
         UpdateLevel();
         UpdateStudentDisplay(); // Initialize the count on start
+
+        ShowBossUI(false);
+
     }
 
     void Update()
@@ -33,19 +40,35 @@ public class UIManager : MonoBehaviour
                 OnGamePausePressed();
         }
 
-        // Keep the student display updated in real-time
-        // Alternatively, call UpdateStudentDisplay() from GameManager when the value changes
+
         UpdateStudentDisplay();
     }
 
     public void UpdateStudentDisplay()
     {
-        if (studentSavedText != null && GameManager.Instance != null)
-        {
-            // Pulls the integer from GameManager and displays it
-            studentSavedText.text = GameManager.Instance.savedStudents.ToString() + "/" + 10;
-        }
 
+
+        if (studentSavedText == null) return;
+
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        if (sceneName == "Level_1" || sceneName == "Level_3")
+        {
+            if (StudentSaveManager.Instance != null)
+            {
+                studentSavedText.gameObject.SetActive(true);
+                studentSavedText.text = StudentSaveManager.Instance.savedStudents + "/10";
+            }
+            else
+            {
+                studentSavedText.text = "0/10";
+            }
+        }
+        else
+        {
+
+            studentSavedText.gameObject.SetActive(false);
+        }
     }
 
     public void OnGamePausePressed()
@@ -69,14 +92,12 @@ public class UIManager : MonoBehaviour
 
     public void OnGameResetPressed()
     {
-        // If your level resets, you might want to reset the count in GameManager too
-        // GameManager.Instance.ResetStudentCount(); 
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         pauseUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
-        GameManager.Instance.savedStudents = 0;
+        StudentSaveManager.ClearLevelSaveCount(SceneManager.GetActiveScene().name);
 
     }
 
@@ -117,5 +138,19 @@ public class UIManager : MonoBehaviour
     {
         potionSlider.maxValue = max;
         potionSlider.value = current;
+    }
+
+    public void ShowBossUI(bool show)
+    {
+        if (bossHealthUI != null)
+            bossHealthUI.SetActive(show);
+    }
+
+    public void UpdateBossHealth(float current, float max)
+    {
+        if (bossHealthSlider == null) return;
+
+        bossHealthSlider.maxValue = max;
+        bossHealthSlider.value = current;
     }
 }

@@ -4,15 +4,15 @@ using UnityEngine.SceneManagement;
 public class CameraMovement : MonoBehaviour
 {
     [Header("Follow Settings")]
-    public Transform playerTransform;     // Drag your Player GameObject here in Inspector
+    public Transform playerTransform;
 
     [Header("Offset & Smoothing")]
-    public float xOffsetLevel4 = -3f;     // Offset only for Level 4 (player on left)
-    public float xOffsetDefault = 0f;     // Offset for other scenes (player centered)
-    public float yOffset = 0f;            // Usually 0 or small value to center player vertically
-    public float smoothTime = 0.15f;      // How smooth/fast the follow feels (0.1–0.3 is nice)
+    public float xOffsetLevel4 = -3f;
+    public float xOffsetDefault = 0f;
+    public float yOffset = 0f;  
+    public float smoothTime = 0.15f;   
 
-    private Vector3 velocity = Vector3.zero;  // Used by SmoothDamp
+    private Vector3 velocity = Vector3.zero;
 
     private void LateUpdate()
     {
@@ -27,11 +27,10 @@ public class CameraMovement : MonoBehaviour
         // Follow player X with scene-specific offset
         Vector3 targetPosition = new Vector3(
             playerTransform.position.x + xOffset,
-            transform.position.y + yOffset, // Keep camera's current Y (or fixed value)
-            transform.position.z            // Usually -10 for 2D
+            transform.position.y + yOffset, 
+            transform.position.z 
         );
 
-        // Smooth movement (prevents jitter)
         transform.position = Vector3.SmoothDamp(
             transform.position,
             targetPosition,

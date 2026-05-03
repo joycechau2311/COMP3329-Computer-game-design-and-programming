@@ -15,26 +15,23 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton pattern
-        if (Instance != null && Instance != this)
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        // Subscribe to the sceneLoaded event
-        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     public void AddSavedStudent()
     {
         savedStudents++;
-        Debug.Log($"Student Saved! Total: {savedStudents}");
 
-        // This is where you would trigger a UI update if you have one
-        //UIManager.UpdateStudentDisplay(savedStudents);
     }
 
     public void ResetStudentCount()
@@ -44,10 +41,10 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // CRITICAL: Every time a scene loads, we must find the NEW animator in that scene
+
         if (transitionAnimator == null)
         {
-            // Make sure your Transition Canvas/Object has the Tag "Transition"
+
             GameObject transitionObj = GameObject.FindGameObjectWithTag("Transition");
             if (transitionObj != null)
             {
@@ -55,12 +52,20 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"Scene: {scene.name} | Animator Assigned: {transitionAnimator != null}");
     }
 
     public void LoadNextLevel()
     {
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
+
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        if (currentSceneName == "Level_4")
+        {
+            LoadEnding();
+            return;
+        }
+
         int nextIndex = currentIndex + 1;
 
         if (nextIndex < SceneManager.sceneCountInBuildSettings)
@@ -75,18 +80,34 @@ public class GameManager : MonoBehaviour
         {
             transitionAnimator.SetTrigger("Start");
         }
-        else
-        {
-            Debug.LogWarning("No Animator found in this scene! Loading instantly.");
-        }
 
         yield return new WaitForSeconds(transitionTime);
         SceneManager.LoadScene(levelIndex);
     }
 
+    public void LoadEnding()
+    {
+        int totalSaved = StudentSaveManager.GetTotalSavedStudents();
+
+
+        if (totalSaved <= 5)
+        {
+            SceneManager.LoadScene("Ending_Bad");
+        }
+        else if (totalSaved >= 16)
+        {
+            SceneManager.LoadScene("Ending_True");
+        }
+        else
+        {
+            SceneManager.LoadScene("Ending_Normal");
+        }
+    }
+
     private void OnDestroy()
     {
-        // Always unsubscribe to prevent memory leaks or errors
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+
+
 }

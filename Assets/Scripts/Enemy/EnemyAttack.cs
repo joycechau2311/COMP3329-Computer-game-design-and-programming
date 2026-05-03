@@ -16,10 +16,7 @@ public class EnemyAttack : MonoBehaviour
         {
             playerTransform = playerObj.transform;
         }
-        else
-        {
-            Debug.LogWarning($"EnemyAttack on {gameObject.name} cannot find Player with tag 'Player'!");
-        }
+
     }
 
     public void TryAttack()
@@ -27,7 +24,7 @@ public class EnemyAttack : MonoBehaviour
         if (!CanAttack()) return;
         if (playerTransform == null)
         {
-            Debug.LogWarning("Cannot attack: Player Transform is null!");
+
             return;
         }
 
@@ -37,12 +34,9 @@ public class EnemyAttack : MonoBehaviour
         if (ph != null)
         {
             ph.TakeDamage(attackDamage);
-            Debug.Log($"{gameObject.name} attacked player! Damage: {attackDamage}");
+
         }
-        else
-        {
-            Debug.LogWarning("PlayerHealth component not found on Player!");
-        }
+
     }
 
     private bool CanAttack()
@@ -50,7 +44,6 @@ public class EnemyAttack : MonoBehaviour
         return Time.time - lastAttackTime >= attackCooldown;
     }
 
-    // 可選：如果之後想讓敵人追擊時才攻擊，可以加這個公開方法給 EnemyMovement 使用
     public bool IsPlayerInRange(float attackRange)
     {
         if (playerTransform == null) return false;

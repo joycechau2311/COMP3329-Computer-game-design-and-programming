@@ -22,8 +22,6 @@ public class bulletScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         Collider2D col = GetComponent<Collider2D>();
 
-        UnityEngine.Debug.Log($"[BULLET] Start() - Collider found: {col != null}, Rigidbody found: {rb != null}");
-        UnityEngine.Debug.Log($"[BULLET] Collider enabled: {(col != null ? col.enabled : false)}, Is Trigger: {(col != null ? col.isTrigger : false)}");
 
         // Avoid immediately colliding with the player when the bullet spawns
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -60,7 +58,6 @@ public class bulletScript : MonoBehaviour
         if (col != null)
         {
             col.enabled = true;
-            UnityEngine.Debug.Log($"[BULLET] EnableCollider() - Collider now enabled at position {transform.position}");
         }
     }
 
@@ -82,7 +79,6 @@ public class bulletScript : MonoBehaviour
         if (TryCompareTag(other, "Player"))
             return;
 
-        UnityEngine.Debug.Log($"[BULLET] HandleCollision() with {other.gameObject.name}, tag: {other.tag}");
 
         string currentScene = SceneManager.GetActiveScene().name;
         bool isBossScene = currentScene == bossSceneName || currentScene.Contains("Boss");
@@ -174,7 +170,6 @@ public class bulletScript : MonoBehaviour
         }
         catch (UnityException)
         {
-            UnityEngine.Debug.LogWarning($"[BULLET] Tag '{tag}' is not defined. Add it in Tags and Layers or use a component-based collision check.");
             return false;
         }
     }
@@ -185,15 +180,4 @@ public class bulletScript : MonoBehaviour
         Destroy(gameObject, 0.1f);
     }
 
-    void Update()
-    {
-        // Fallback: explicitly destroy bullets that go far out of bounds
-        // Check if bullet is way off screen or way past right boundary
-        if (transform.position.x > 100f || transform.position.x < -100f ||
-            transform.position.y > 100f || transform.position.y < -100f)
-        {
-            Destroy(gameObject);
-            UnityEngine.Debug.Log("Bullet destroyed: out of bounds at " + transform.position);
-        }
-    }
 }

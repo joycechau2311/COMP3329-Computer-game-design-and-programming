@@ -22,7 +22,7 @@ public class EnemyMover : MonoBehaviour
     [SerializeField] private float minReboundInterval = 0.12f;
 
     [Header("Obstacle Avoidance")]
-    [Tooltip("Layers that the mover will rebound off (recommended: just your Box/Obstacle layer).")]
+    [Tooltip("Layers that the mover will rebound off")]
     [SerializeField] private LayerMask reboundMask;
     [Tooltip("Kept for backward compatibility; if Rebound Mask is not set, this will be used.")]
     [SerializeField] private LayerMask obstacleMask;
@@ -48,10 +48,7 @@ public class EnemyMover : MonoBehaviour
         health = GetComponent<EnemyHealth>();
 
         enemyAttack = GetComponent<EnemyAttack>();
-        if (enemyAttack == null)
-        {
-            UnityEngine.Debug.LogWarning($"EnemyAttack component is missing on {gameObject.name}! It will not be able to attack.");
-        }
+
 
         if (spriteRenderer != null)
             halfWidth = spriteRenderer.bounds.extents.x;

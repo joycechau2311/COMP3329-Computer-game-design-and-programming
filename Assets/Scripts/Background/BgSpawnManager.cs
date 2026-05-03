@@ -15,13 +15,10 @@ public class BgSpawnManager : MonoBehaviour
 
         if (bgParent == null)
         {
-            // 关键修复：给Debug加完整命名空间
-            UnityEngine.Debug.LogError("Assign bgParent!");
             return;
         }
 
         Transform bgTemplate = bgParent.GetChild(0);
-        // 若有地面模板，按实际层级修改索引
         Transform groundTemplate = bgParent.GetChild(2);
 
         int existingGroups = bgParent.childCount / 2;

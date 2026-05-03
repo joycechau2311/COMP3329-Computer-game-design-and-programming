@@ -33,8 +33,6 @@ public class BossFloatAndFreeze : MonoBehaviour
         if (_animator == null)
             _animator = GetComponentInParent<Animator>();
 
-        if (_animator == null)
-            UnityEngine.Debug.LogWarning("BossFloatAndFreeze could not find an Animator component for hit state detection.");
     }
 
     void LateUpdate()

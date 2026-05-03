@@ -4,7 +4,7 @@ public class FollowPlayerXPosition : MonoBehaviour
 {
     [Header("Follow Settings")]
     public Transform playerTransform;
-    public float xOffset = 0f;  // Offset from player X position (optional)
+    public float xOffset = 0f; 
 
     [Header("Horizontal Bounds")]
     public float minX = float.NegativeInfinity;
@@ -18,6 +18,7 @@ public class FollowPlayerXPosition : MonoBehaviour
         // Store the initial Y and Z positions so they never change
         _initialY = transform.position.y;
         _initialZ = transform.position.z;
+
     }
 
     private void LateUpdate()

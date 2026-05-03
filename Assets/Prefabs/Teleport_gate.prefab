@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 532373641833632123}
   - component: {fileID: 8308531991651117679}
   - component: {fileID: 8274145867189838203}
+  - component: {fileID: 4272668549746705110}
   m_Layer: 6
   m_HasEditorInfo: 1
   m_Name: Teleport_gate
@@ -29,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 4282831060208436491}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 29.29, y: -1.67, z: -0.1}
-  m_LocalScale: {x: 0.519, y: 0.6471866, z: 1}
+  m_LocalPosition: {x: 28.9032, y: -1.3775, z: -0.1}
+  m_LocalScale: {x: 0.6864558, y: 0.7655574, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -79,7 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: -520773265
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 39c814408c03144af96987443dd749a7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0c574ffa092bc4b93ba62192fabd95c4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -137,15 +138,38 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeLayer: 0
-  m_Offset: {x: 0.15304592, y: 0.43621886}
+  m_Offset: {x: 0.17122477, y: -0.292652}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 14.08, y: 7.68}
+    oldSize: {x: 4.62, y: 4.94}
     newSize: {x: 14.08, y: 7.68}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.0830603, y: 1.8182027}
+  m_Size: {x: 1.5377234, y: 2.2263703}
   m_EdgeRadius: 0
+--- !u!95 &4272668549746705110
+Animator:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4282831060208436491}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 637c9a29d64d9446dac4ea8dec790c5b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_UpdateFrequencyMode: 0
+  m_UpdateFrequency: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
