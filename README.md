@@ -1,6 +1,6 @@
 COMP3329 Computer game design and programming
 
-Repocalypse-GPA Saver
+Rapocalypse-GPA Saver
 
 Group 24 
 Chau Wai Yee (3036336168)
