@@ -223,7 +223,7 @@ public class PlayerController : MonoBehaviour
             sfxSource.PlayOneShot(shootSound);
         }
 
-        float offsetX = right ? 1f : -1f;
+        float offsetX = right ? 0.5f : -0.5f;
         Vector3 spawnPos = transform.position + new Vector3(offsetX, -1f, 0f);
 
         GameObject newBullet = Instantiate(bullet, spawnPos, Quaternion.identity);
