@@ -1602,6 +1602,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sfxSource: {fileID: 1793176514}
   musicSource: {fileID: 1058678264}
+  bgmMenu: {fileID: 8300000, guid: e7e798c90f908944d9c0d3ed52f84d7e, type: 3}
+  bgmLevel1: {fileID: 8300000, guid: 8df7efbb4d9950b449bb6c766d4c0b76, type: 3}
+  bgmLevel2: {fileID: 8300000, guid: 65daee9cb53824a76b96ed1d1d562c4b, type: 3}
+  bgmLevel3: {fileID: 8300000, guid: e7e798c90f908944d9c0d3ed52f84d7e, type: 3}
+  bgmLevel4: {fileID: 8300000, guid: 50d0e9222545d74448c9d73be2096432, type: 3}
 --- !u!1 &1433128050
 GameObject:
   m_ObjectHideFlags: 0

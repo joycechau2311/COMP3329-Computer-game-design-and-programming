@@ -20,10 +20,10 @@ public class Level2Defender : MonoBehaviour
     WaveSettings GetCurrentWave(float currentTime)
     {
         if (currentTime < 20f)       
-            return new WaveSettings(5f, 1.0f);  
+            return new WaveSettings(2f, 1.0f);  
 
-        if (currentTime < 50f)    
-            return new WaveSettings(3f, 1.4f);   // Faster spawn, a bit faster enemies
+        if (currentTime < 80f)    
+            return new WaveSettings(1.5f, 1.4f);   // Faster spawn, a bit faster enemies
 
         return new WaveSettings(2f, 1.8f);  
     }

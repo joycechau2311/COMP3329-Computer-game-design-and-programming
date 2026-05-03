@@ -125,9 +125,9 @@ public class InfiniteScroll : MonoBehaviour
 
     private void Update()
     {
-        // ✅ Stop infinite scrolling once boss fight starts
-        if (BossManager.Instance != null && BossManager.Instance.IsBossFightActive)
-            return;
+        //// ✅ Stop infinite scrolling once boss fight starts
+        //if (BossManager.Instance != null && BossManager.Instance.IsBossFightActive)
+        //    return;
 
         if (player == null) return;
 

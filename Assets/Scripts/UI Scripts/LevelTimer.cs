@@ -7,8 +7,8 @@ public class LevelTimer : MonoBehaviour
     [Header("Time Settings (per level)")]
     public float level1Time = 120f;   // 2 mins
     public float level2Time = 180f;   // 3 mins
-    public float level3Time = 240f;   // 4 mins
-    public float level4Time = 300f;   // 5 mins
+    public float level3Time = 120f;   // 4 mins
+    public float level4Time = 180f;   // 5 mins
 
     [Header("Game Over Settings")]
     public string gameOverSceneName = "GameOver"; // Make sure this matches your scene name

@@ -2,33 +2,24 @@ using UnityEngine;
 
 public class Bubble : MonoBehaviour
 {
-    [Header("Detection Settings")]
-    public float visionRange = 10f; // How close the player needs to be
+    public float visionRange = 5f; // Reduced for better gameplay feel
     private Transform playerTransform;
-
-    private Animator bubbleAnim;
     private bool isPopped = false;
+    private Animator bubbleAnim;
 
     void Start()
     {
         bubbleAnim = GetComponent<Animator>();
-
-        // Find the player at the start
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
-        {
-            playerTransform = playerObj.transform;
-        }
+        if (playerObj != null) playerTransform = playerObj.transform;
     }
 
     void Update()
     {
-        // Don't do anything if already popped or if player is missing
         if (isPopped || playerTransform == null) return;
 
-        // Calculate the distance between bubble and player
+        // Requirement: Pop when player is inside "vision" (distance)
         float distance = Vector2.Distance(transform.position, playerTransform.position);
-
         if (distance <= visionRange)
         {
             PopBubble();
@@ -38,27 +29,15 @@ public class Bubble : MonoBehaviour
     private void PopBubble()
     {
         isPopped = true;
+        if (bubbleAnim != null) bubbleAnim.SetTrigger("PlayerTouch");
 
-        if (bubbleAnim != null)
-        {
-            bubbleAnim.SetTrigger("PlayerTouch");
-        }
-
-        // Release the student inside
+        // Release the student so they stay in the world when the bubble is gone
         transform.DetachChildren();
 
-        // Disable collider so player can walk through the popping effect
+        // Disable the bubble's collider so it doesn't block the player
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        Destroy(gameObject, 1.5f);
-        Debug.Log($"Distance check passed: {gameObject.name} popped!");
-    }
-
-    // Visual aid in the Editor so you can see the "Vision Range"
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, visionRange);
+        Destroy(gameObject, 0.5f);
     }
 }

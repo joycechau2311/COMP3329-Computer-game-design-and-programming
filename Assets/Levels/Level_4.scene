@@ -1649,6 +1649,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9033618428657548280, guid: d3c90638388a44d0ca181e51bd30122a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1909,7 +1913,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab3f447a786704e9ea54b63295e72054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moverPrefab: {fileID: 1645489484}
   chaserPrefab: {fileID: 3615253670614193298, guid: 33c78444c0c8642d3bb31e1ffed53cf6, type: 3}
   flyingPrefab: {fileID: 4008409897650749287, guid: 7dd7afe3fd08847109d3f055d0e14ef4, type: 3}
   leftSpawnPoint: {fileID: 0}
@@ -1923,6 +1926,7 @@ MonoBehaviour:
   flyingThresholdY: 5
   requiredKills: 30
   bossSceneName: Level_4
+  flyerSpeedMultiplier: 0.5
 --- !u!114 &1645489488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2465,7 +2469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 777432dc70f039347a9e3a7b11665a29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredKills: 10
+  requiredKills: 20
   rabbitTag: Enemy
   bulletTag: Bullet
   tableObject: {fileID: 315866873}
@@ -2485,7 +2489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb92a43c973f5449898d2ec5e965925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredRabbits: 30
+  requiredRabbits: 40
   isPhase2Active: 0
 --- !u!114 &2096881063
 MonoBehaviour:

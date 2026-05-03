@@ -187,13 +187,13 @@ public class bulletScript : MonoBehaviour
 
     void Update()
     {
-        // Fallback: explicitly destroy bullets that go far out of bounds
-        // Check if bullet is way off screen or way past right boundary
-        if (transform.position.x > 100f || transform.position.x < -100f ||
-            transform.position.y > 100f || transform.position.y < -100f)
-        {
-            Destroy(gameObject);
-            UnityEngine.Debug.Log("Bullet destroyed: out of bounds at " + transform.position);
-        }
+        //// Fallback: explicitly destroy bullets that go far out of bounds
+        //// Check if bullet is way off screen or way past right boundary
+        //if (transform.position.x > 100f || transform.position.x < -100f ||
+        //    transform.position.y > 100f || transform.position.y < -100f)
+        //{
+        //    Destroy(gameObject);
+        //    UnityEngine.Debug.Log("Bullet destroyed: out of bounds at " + transform.position);
+        //}
     }
 }

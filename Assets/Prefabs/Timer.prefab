@@ -262,8 +262,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level1Time: 120
   level2Time: 180
-  level3Time: 240
-  level4Time: 300
+  level3Time: 120
+  level4Time: 180
+  gameOverSceneName: GameOver
 --- !u!1 &7689652832337282523
 GameObject:
   m_ObjectHideFlags: 0
