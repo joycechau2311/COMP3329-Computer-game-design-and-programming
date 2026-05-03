@@ -45,6 +45,5 @@ public class MainMenuManager : MonoBehaviour
         yield return new WaitForSeconds(loadDelay);
         
         Application.Quit();
-        Debug.Log("The 'Exit' button was clicked. The game would close now if it was a built application!");
     }
 }

@@ -58,8 +58,7 @@ public class TonyHealth : MonoBehaviour
     private void Die()
     {
         isDead = true;
-        Debug.Log("Tony has been defeated!");
-        // Add death animation here if needed
+
     }
 
     public float GetHealthPercentage() => currentHealth / maxHealth;

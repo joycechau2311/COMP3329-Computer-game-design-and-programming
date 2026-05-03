@@ -1,26 +1,23 @@
 ﻿using System.Diagnostics;
 using UnityEngine;
 
-// Ensures all code is inside the class braces with proper syntax
 public class BossHealth : MonoBehaviour
 {
     [Header("Boss Health Settings")]
     public float maxHealth = 4.3f;
     public float damagePerBullet = 0.1f;
     public float invincibilityDuration = 0.2f;
-    public float sleepAnimationDelay = 0.5f; // Match to your hit animation length (e.g., 0.5s)
-    public float hitAnimationLayer = 1; // Hit Animation layer index (1 = second layer, Base = 0)
-    public float sleepAnimationLength = 2.0f; // Length of B_Sleep animation (adjust to your anim)
+    public float sleepAnimationDelay = 0.5f;
+    public float hitAnimationLayer = 1; 
+    public float sleepAnimationLength = 2.0f; 
     public bool IsFightActive { get; private set; } = false;
 
-    // Health change event (moved below Header to fix CS0592)
     public event System.Action<float, float> OnHealthChanged;
     public event System.Action OnBossDied;
 
     [Header("Animation Link")]
     public Animator bossAnimator;
 
-    // Read-only property for UI to access current health (encapsulation)
     public float CurrentHealth => _currentHealth;
     public float _currentHealth;
     private bool _isInvincible;
@@ -48,10 +45,6 @@ public class BossHealth : MonoBehaviour
         if (bossAnimator == null)
             bossAnimator = GetComponentInParent<Animator>();
 
-        if (bossAnimator == null)
-        {
-            UnityEngine.Debug.LogWarning("⚠️ BossHealth: Animator component not found on boss object!");
-        }
 
         // Enable Hit Animation layer (critical for hit animation to work)
         if (bossAnimator != null && bossAnimator.layerCount > hitAnimationLayer)
@@ -63,13 +56,10 @@ public class BossHealth : MonoBehaviour
         _fallToGround = GetComponent<BossFallToGround>();
         if (_fallToGround == null)
         {
-            UnityEngine.Debug.LogWarning("⚠️ BossHealth: BossFallToGround component not found - adding automatically!");
             _fallToGround = gameObject.AddComponent<BossFallToGround>();
         }
 
-        UpdateBossGPAAnimation();
-        UnityEngine.Debug.Log($"✅ Boss initialized | Max HP: {maxHealth} | Current HP: {_currentHealth}");
-    }
+        UpdateBossGPAAnimation();}
 
     void Update()
     {
@@ -110,7 +100,6 @@ public class BossHealth : MonoBehaviour
         {
             bossAnimator.ResetTrigger("OnHit"); // Prevent double triggers
             bossAnimator.SetTrigger("OnHit");
-            UnityEngine.Debug.Log("🎬 Playing boss hit animation (fallback trigger)");
         }
     }
 
@@ -130,16 +119,6 @@ public class BossHealth : MonoBehaviour
 
         _isDead = true;
         bossIsDead = true;
-
-        UnityEngine.Debug.Log("☠️ Boss death sequence started");
-
-        //// Force stop spawning immediately
-        //WaveSpawner spawner = GetComponent<WaveSpawner>();
-        //if (spawner != null)
-        //{
-        //    //spawner.StopSpawning();
-        //    UnityEngine.Debug.Log("✅ Told WaveSpawner to stop spawning");
-        //}
 
         // Kill all remaining enemies
         EnemyHealth[] enemies = FindObjectsOfType<EnemyHealth>();
@@ -167,7 +146,6 @@ public class BossHealth : MonoBehaviour
             if (bossAnimator.HasState(0, sleepHash))
             {
                 bossAnimator.Play(sleepHash, 0); // Force play on Base Layer
-                UnityEngine.Debug.Log("🎬 Playing B_Sleep death animation");
             }
         }
 
@@ -175,7 +153,6 @@ public class BossHealth : MonoBehaviour
         if (_fallToGround != null)
         {
             _fallToGround.StartFall();
-            UnityEngine.Debug.Log("🌎 Boss started falling to ground");
         }
 
         // Disable collider to prevent further damage
@@ -184,16 +161,12 @@ public class BossHealth : MonoBehaviour
             bossCollider.enabled = false;
 
 
-        // Trigger ending EARLY (reliable)
-        UnityEngine.Debug.Log("🎬 Boss defeated → loading ending");
-
         if (GameManager.Instance != null)
         {
             GameManager.Instance.LoadEnding();
         }
         else
         {
-            UnityEngine.Debug.LogError("❌ GameManager.Instance is NULL");
         }
 
         // (optional) still notify others if needed
@@ -216,7 +189,6 @@ public class BossHealth : MonoBehaviour
 
         float roundedHealth = Mathf.Round(_currentHealth * 100f) / 100f;
 
-        // Only update animator if value actually changed (much better performance)
         if (Mathf.Abs(bossAnimator.GetFloat(BOSS_GPA_PARAM) - roundedHealth) > 0.01f)
         {
             bossAnimator.SetFloat(BOSS_GPA_PARAM, roundedHealth);
@@ -228,8 +200,6 @@ public class BossHealth : MonoBehaviour
             phase2Started = BossPhaseController.instance.isPhase2Active;
         }
 
-        // REMOVE or make rare: Only log when health actually changes
-        // UnityEngine.Debug.Log($"📊 Boss GPA updated: {roundedHealth} | Phase 2 Active: {phase2Started}");
     }
 
     private bool _phase3Triggered = false;
@@ -252,7 +222,6 @@ public class BossHealth : MonoBehaviour
                 {
                     bossAnimator.Play("B_Spawn_P3", 0);
                 }
-                UnityEngine.Debug.Log("🔄 Boss phase 3 triggered (health ≤1)");
                 break;
             }
         }
@@ -285,7 +254,6 @@ public class BossHealth : MonoBehaviour
             OnHealthChanged?.Invoke(_currentHealth, maxHealth);
 
         UpdateBossGPAAnimation();
-        UnityEngine.Debug.Log($"🔄 Boss health reset to max: {maxHealth}");
     }
 
     // Context menu: Test damage (for debugging)
@@ -303,7 +271,6 @@ public class BossHealth : MonoBehaviour
         // Send initial UI sync (max -> current)
         OnHealthChanged?.Invoke(_currentHealth, maxHealth);
 
-        UnityEngine.Debug.Log("👑 Boss fight activated");
     }
 
 

@@ -21,11 +21,9 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
 
-            Debug.Log("✅ GameManager initialized");
         }
         else
         {
-            Debug.LogWarning("⚠️ Duplicate GameManager destroyed");
             Destroy(gameObject);
         }
     }
@@ -33,10 +31,7 @@ public class GameManager : MonoBehaviour
     public void AddSavedStudent()
     {
         savedStudents++;
-        Debug.Log($"Student Saved! Total: {savedStudents}");
 
-        // This is where you would trigger a UI update if you have one
-        //UIManager.UpdateStudentDisplay(savedStudents);
     }
 
     public void ResetStudentCount()
@@ -46,10 +41,10 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // CRITICAL: Every time a scene loads, we must find the NEW animator in that scene
+
         if (transitionAnimator == null)
         {
-            // Make sure your Transition Canvas/Object has the Tag "Transition"
+
             GameObject transitionObj = GameObject.FindGameObjectWithTag("Transition");
             if (transitionObj != null)
             {
@@ -57,7 +52,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"Scene: {scene.name} | Animator Assigned: {transitionAnimator != null}");
     }
 
     public void LoadNextLevel()
@@ -66,7 +60,6 @@ public class GameManager : MonoBehaviour
 
         string currentSceneName = SceneManager.GetActiveScene().name;
 
-        // If this is the FINAL LEVEL → go to ending
         if (currentSceneName == "Level_4")
         {
             LoadEnding();
@@ -87,10 +80,6 @@ public class GameManager : MonoBehaviour
         {
             transitionAnimator.SetTrigger("Start");
         }
-        else
-        {
-            Debug.LogWarning("No Animator found in this scene! Loading instantly.");
-        }
 
         yield return new WaitForSeconds(transitionTime);
         SceneManager.LoadScene(levelIndex);
@@ -100,7 +89,6 @@ public class GameManager : MonoBehaviour
     {
         int totalSaved = StudentSaveManager.GetTotalSavedStudents();
 
-        Debug.Log("Total Saved Students: " + totalSaved);
 
         if (totalSaved <= 5)
         {
@@ -118,7 +106,6 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Always unsubscribe to prevent memory leaks or errors
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 

@@ -71,7 +71,6 @@ public class Level2Defender : MonoBehaviour
         waveCoroutine = StartCoroutine(WaveSystemRoutine());
         StartCoroutine(PotionBrewingRoutine());
 
-        Debug.Log("=== Level 2 Started - Protect Tony until potion is ready ===");
     }
 
     IEnumerator WaveSystemRoutine()
@@ -125,10 +124,7 @@ public class Level2Defender : MonoBehaviour
         {
             ShowTeleportGate();
         }
-        else
-        {
-            Debug.Log("Level 2 Failed");
-        }
+
     }
 
     private void ShowTeleportGate()
@@ -138,7 +134,6 @@ public class Level2Defender : MonoBehaviour
         if (teleportGate != null)
         {
             teleportGate.SetActive(true);
-            Debug.Log("✅ Teleport Gate has appeared! Level 2 Complete.");
         }
 
         if (tonyHealth != null)
@@ -148,7 +143,7 @@ public class Level2Defender : MonoBehaviour
     void SpawnEnemy(WaveSettings wave)
     {
         Camera cam = Camera.main;
-        float y = Random.Range(-2f, 2f); // adjust to your ground height
+        float y = Random.Range(-2f, 2f);
 
         float x;
         if (Random.value < 0.5f)

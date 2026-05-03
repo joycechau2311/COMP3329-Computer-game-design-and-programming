@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class AnimationEventRelay : MonoBehaviour
 {
-    public PlayerController player;  // assign this in Inspector
+    public PlayerController player;
 
-    // This gets called by the animation event
     public void FireBullet()
     {
         if (player != null)

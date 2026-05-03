@@ -13,7 +13,7 @@ public class UIManager : MonoBehaviour
     public Slider potionSlider;
 
     [Header("Student Stats")]
-    public TextMeshProUGUI studentSavedText; // Drag your TextMeshPro counter here
+    public TextMeshProUGUI studentSavedText; 
     
     private bool isPaused = false;
 
@@ -26,7 +26,6 @@ public class UIManager : MonoBehaviour
         UpdateLevel();
         UpdateStudentDisplay(); // Initialize the count on start
 
-        // ✅ FORCE boss UI hidden before fight
         ShowBossUI(false);
 
     }
@@ -41,16 +40,13 @@ public class UIManager : MonoBehaviour
                 OnGamePausePressed();
         }
 
-        // Keep the student display updated in real-time
-        // Alternatively, call UpdateStudentDisplay() from GameManager when the value changes
+
         UpdateStudentDisplay();
     }
 
     public void UpdateStudentDisplay()
     {
 
-        Debug.Log("Current Scene: " + SceneManager.GetActiveScene().name);
-        Debug.Log("StudentSaveManager exists: " + (StudentSaveManager.Instance != null));
 
         if (studentSavedText == null) return;
 
@@ -70,7 +66,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            // Hide counter in levels without student saving, e.g. Level_2
+
             studentSavedText.gameObject.SetActive(false);
         }
     }
@@ -96,8 +92,6 @@ public class UIManager : MonoBehaviour
 
     public void OnGameResetPressed()
     {
-        // If your level resets, you might want to reset the count in GameManager too
-        // GameManager.Instance.ResetStudentCount(); 
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         pauseUI.SetActive(false);

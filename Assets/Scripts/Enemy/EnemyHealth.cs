@@ -38,11 +38,6 @@ public class EnemyHealth : MonoBehaviour
         if (anim == null)
             anim = GetComponentInParent<Animator>();
 
-        if (anim == null)
-            Debug.LogWarning($"EnemyHealth on '{name}' could not find an Animator component.");
-        else
-            Debug.Log($"EnemyHealth on '{name}' found Animator '{anim.gameObject.name}'");
-
         // Grab the AudioSource if it wasn't manually assigned in the inspector
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
@@ -53,7 +48,7 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
 
         currentHealth -= damage;
-        Debug.Log(name + " hit! Health: " + currentHealth);
+
 
         if (currentHealth <= 0)
         {
@@ -77,7 +72,6 @@ public class EnemyHealth : MonoBehaviour
 
         if (anim != null)
         {
-            Debug.Log($"EnemyHealth '{name}' PlayHitAnimation: has IsGettingHit={HasParameter("IsGettingHit")}, IsGetting={HasParameter("IsGetting")}, GetHit={HasParameter("GetHit")}, Hit={HasParameter("Hit")}, state GetHit={HasState("GetHit")}, Hit={HasState("Hit")}");
 
             if (HasParameter("IsGettingHit"))
                 anim.SetBool("IsGettingHit", true);
@@ -137,7 +131,7 @@ public class EnemyHealth : MonoBehaviour
 
     IEnumerator DieSequence()
     {
-        Debug.Log(name + " destroyed!");
+
         isDead = true;
 
         // --- NEW: Play death sound ---
@@ -148,7 +142,6 @@ public class EnemyHealth : MonoBehaviour
 
         if (anim != null)
         {
-            Debug.Log($"EnemyHealth '{name}' DieSequence: has IsDead={HasParameter("IsDead")}, Dead={HasParameter("Dead")}, Die={HasParameter("Die")}, DeadAnim={HasParameter("DeadAnim")}, state DeadAnim={HasState("DeadAnim")}, Die={HasState("Die")}, GetHit={HasState("GetHit")}");
 
             if (HasParameter("IsDead"))
             {

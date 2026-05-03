@@ -19,8 +19,8 @@ public class PlayerHealth : MonoBehaviour
     private UIManager uiManager;
 
     [Header("Game Over Settings")]
-    public float delayBeforeGameOver = 1.5f; // The delay parameter you requested
-    public string gameOverSceneName = "GameOver"; // Make sure this matches your scene name exactly
+    public float delayBeforeGameOver = 1.5f;
+    public string gameOverSceneName = "GameOver";
 
     void Start()
     {
@@ -36,7 +36,6 @@ public class PlayerHealth : MonoBehaviour
         if (isDead) return;
 
         currentHealth -= damage;
-        Debug.Log("Player got hit! Remaining health: " + currentHealth);
         
         if (uiManager != null)
             uiManager.UpdateHealthBar(currentHealth, maxHealth);
@@ -55,7 +54,7 @@ public class PlayerHealth : MonoBehaviour
 
     IEnumerator DieSequence()
     {
-        Debug.Log("Player died!");
+
         isDead = true;
 
         // Play death sound

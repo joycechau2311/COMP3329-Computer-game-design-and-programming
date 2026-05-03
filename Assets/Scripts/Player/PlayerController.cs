@@ -72,7 +72,6 @@ public class PlayerController : MonoBehaviour
         if (currentScene.Contains("Level4") || currentScene.Contains("Level 4") || currentScene.Contains("Level_4"))
         {
             transform.position = new Vector3(level4StartX, transform.position.y, transform.position.z);
-            Debug.Log($"Player start position set to x={level4StartX} for {currentScene}");
         }
 
         if (playerHealth == null)

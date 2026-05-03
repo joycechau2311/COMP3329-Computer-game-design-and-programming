@@ -52,7 +52,6 @@ public class BossManager : MonoBehaviour
         if (bossFightStarted) return;
         bossFightStarted = true;
 
-        Debug.Log("👑 Boss entered vision — fight started!");
 
         // Stop infinite scrolling
         if (infiniteScroll != null)
@@ -63,7 +62,6 @@ public class BossManager : MonoBehaviour
         if (follow != null)
             follow.enabled = true;
 
-        // ✅ Subscribe UI BEFORE activation
         bossHealth.OnHealthChanged += uiManager.UpdateBossHealth;
         bossHealth.OnBossDied += EndBossFight;
 
@@ -87,7 +85,6 @@ public class BossManager : MonoBehaviour
 
     private void EndBossFight()
     {
-        Debug.Log("✅ Boss fight ended");
 
         uiManager.ShowBossUI(false);
 
@@ -101,7 +98,6 @@ public class BossManager : MonoBehaviour
         if (comp != null)
         {
             comp.enabled = true;
-            Debug.Log($"✅ Enabled {typeof(T).Name}");
         }
     }
 }

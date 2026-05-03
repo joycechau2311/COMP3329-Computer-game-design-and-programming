@@ -11,7 +11,7 @@ public class LevelTimer : MonoBehaviour
     public float level4Time = 180f;   // 5 mins
 
     [Header("Game Over Settings")]
-    public string gameOverSceneName = "GameOver"; // Make sure this matches your scene name
+    public string gameOverSceneName = "GameOver";
 
     private float currentTime;
     private bool isTimerRunning = true;
@@ -68,7 +68,6 @@ public class LevelTimer : MonoBehaviour
 
     void TriggerGameOver()
     {
-        Debug.Log("Time's up! GPA crashed!");
 
         // Save the current level name so the "Retry" button knows where to go
         string currentScene = SceneManager.GetActiveScene().name;

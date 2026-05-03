@@ -20,7 +20,7 @@ public class EnemyChaser : MonoBehaviour
 
     [Header("Obstacle Jumping")]
     public float boxCheckDistance = 3f;  // how far ahead to detect box
-    public LayerMask boxLayer;             // layer of your boxes
+    public LayerMask boxLayer;
     public float jumpForce = 7f;           // how high the enemy jumps
     private bool isGrounded = true;        // simple ground check
     public Transform groundCheck;
@@ -90,7 +90,7 @@ public class EnemyChaser : MonoBehaviour
             if (IsBoxInFront(movementDirection) && isGrounded)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-                UnityEngine.Debug.Log("Chaser jumps over box!");
+
             }
 
             // 4. Chase movement
@@ -105,7 +105,7 @@ public class EnemyChaser : MonoBehaviour
     {
         if (collision.collider.CompareTag("Player"))
         {
-            UnityEngine.Debug.Log("Chaser collided with player!");
+
             if (TryGetComponent<EnemyAttack>(out EnemyAttack attack))
                 attack.TryAttack();
         }

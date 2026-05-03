@@ -10,7 +10,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource musicSource;
 
     [Header("Level Music Tracks")]
-    [SerializeField] private AudioClip bgmMenu;    // <--- NEW: Slot for Menu music
+    [SerializeField] private AudioClip bgmMenu;
     [SerializeField] private AudioClip bgmLevel1;
     [SerializeField] private AudioClip bgmLevel2;
     [SerializeField] private AudioClip bgmLevel3;
@@ -47,7 +47,7 @@ public class AudioManager : MonoBehaviour
         // Check which scene loaded and assign the correct track
         switch (scene.name)
         {
-            case "MainMenu": // <--- IMPORTANT: Change "MainMenu" to your exact scene name!
+            case "MainMenu":
                 nextClip = bgmMenu;
                 break;
             case "Level_1":

@@ -17,10 +17,6 @@ public class BossHitAnimation : MonoBehaviour
         if (_phaseController == null)
             _phaseController = GetComponentInParent<BossPhaseController>();
 
-        if (_bossAnimator == null)
-        {
-            UnityEngine.Debug.LogError("❌ BossHitAnimation could not find an Animator component on boss, children, or parent!");
-        }
     }
 
     public void TriggerHitAnimation()
@@ -40,7 +36,6 @@ public class BossHitAnimation : MonoBehaviour
         if (hasOnHit)
         {
             _bossAnimator.SetTrigger("OnHit");
-            UnityEngine.Debug.Log("💥 Boss got hit, playing hit animation (OnHit trigger set)");
 
             // Critical: If P2 is active, force revert to P2 after hit animation
             if (_phaseController != null && _phaseController.isPhase2Active)
@@ -48,10 +43,6 @@ public class BossHitAnimation : MonoBehaviour
                 // Use a small delay to let hit animation play first
                 Invoke(nameof(RevertToP2AfterHit), 0.1f);
             }
-        }
-        else
-        {
-            UnityEngine.Debug.LogWarning("💥 Boss got hit, but no 'OnHit' trigger found in animator!");
         }
     }
 
@@ -63,7 +54,6 @@ public class BossHitAnimation : MonoBehaviour
             if (_bossAnimator.HasState(0, Animator.StringToHash("B_Spawn_P2")))
             {
                 _bossAnimator.Play("B_Spawn_P2");
-                UnityEngine.Debug.Log("🔄 Reverted to P2 state after hit animation");
             }
         }
     }

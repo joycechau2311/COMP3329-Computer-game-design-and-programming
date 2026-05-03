@@ -3,8 +3,8 @@ using UnityEngine;
 public class LeftAirWall : MonoBehaviour
 {
     [Header("References")]
-    public Transform playerTransform; // Drag Player here in Inspector
-    public float disableThresholdX = 5f; // Player X position to disable wall
+    public Transform playerTransform; 
+    public float disableThresholdX = 5f; 
 
     private Collider2D _airWallCollider;
 
@@ -12,7 +12,7 @@ public class LeftAirWall : MonoBehaviour
     {
         _airWallCollider = GetComponent<Collider2D>();
 
-        // Auto-find player if not assigned
+
         if (playerTransform == null)
         {
             playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -21,10 +21,10 @@ public class LeftAirWall : MonoBehaviour
 
     private void Update()
     {
-        // Check if player passed the threshold
+
         if (playerTransform != null && playerTransform.position.x > disableThresholdX)
         {
-            // Disable collision permanently
+
             _airWallCollider.enabled = false;
         }
     }

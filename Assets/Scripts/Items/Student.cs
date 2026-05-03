@@ -10,7 +10,6 @@ public class Student : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    // Requirement: Student disappears only on physical touch
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (isProcessed) return;
@@ -24,7 +23,6 @@ public class Student : MonoBehaviour
     private void SaveStudent()
     {
         isProcessed = true;
-        Debug.Log("Student Touched and Saved!");
 
         if (anim != null) anim.SetTrigger("IsSaved");
 

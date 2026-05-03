@@ -87,7 +87,6 @@ public class EnemyFlyer : MonoBehaviour
     {
         if (collision.collider.CompareTag("Player"))
         {
-            UnityEngine.Debug.Log("Chaser collided with player!");
             if (TryGetComponent<EnemyAttack>(out EnemyAttack attack))
                 attack.TryAttack();
         }

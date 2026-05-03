@@ -17,7 +17,6 @@ public class BossFallToGround : MonoBehaviour
         _fallStartPos = transform.position;
         _isFalling = true;
         _currentFallSpeed = fallSpeed; // Start with initial fall speed instead of 0
-        UnityEngine.Debug.Log($"📌 Fall started from position: {_fallStartPos}");
     }
 
     void Update()
@@ -34,7 +33,6 @@ public class BossFallToGround : MonoBehaviour
         {
             newY = groundY;
             _isFalling = false;
-            UnityEngine.Debug.Log($"✅ Boss landed on ground at Y: {newY}");
         }
 
         // Keep X & Z position from start of fall, only update Y
@@ -45,13 +43,11 @@ public class BossFallToGround : MonoBehaviour
         );
     }
 
-    // Optional: Check if boss has finished falling
     public bool IsFallingComplete()
     {
         return !_isFalling && transform.position.y <= groundY;
     }
 
-    // Optional: Reset fall state (for testing/respawn)
     [ContextMenu("Reset Fall State")]
     public void ResetFall()
     {

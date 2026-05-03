@@ -44,16 +44,11 @@ public class WaveSpawner : MonoBehaviour
         if (IsSpawnedClone())
         {
             if (logSpawnDebug)
-                UnityEngine.Debug.Log($"[SPAWN] WaveSpawner is running on spawned clone '{gameObject.name}'; disabling this instance.");
+
             enabled = false;
             return;
         }
 
-        // Validate required references (removed moverPrefab check)
-        if (chaserPrefab == null || flyingPrefab == null)
-        {
-            UnityEngine.Debug.LogWarning("[SPAWN] Missing enemy prefabs - assign Chaser and Flyer in Inspector!");
-        }
     }
 
     bool IsSpawnedClone()
@@ -260,7 +255,6 @@ public class WaveSpawner : MonoBehaviour
         return null;
     }
 
-    // New Helper: Weighted choice between Chaser and Flyer[cite: 2]
     GameObject ChooseEnemyPrefab()
     {
         if (chaserPrefab == null) return flyingPrefab;
