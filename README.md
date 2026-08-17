@@ -58,9 +58,9 @@ This project was built as part of **COMP3329 Computer Game Design and Programmin
 
 ## 👥 Meet the Team (Group 24)
 
-* **Chau Wai Yee** (3036336168)
-* **Chung Ka Yi** (3036058247)
-* **Hui Lok** (3036059980)
-* **Lam Wui Yan** (3036002420)
+* **Chau Wai Yee**
+* **Chung Ka Yi**
+* **Hui Lok**
+* **Lam Wui Yan**
 
 > **Thank you for playing! Keep your dash ready, and save those GPAs!**
